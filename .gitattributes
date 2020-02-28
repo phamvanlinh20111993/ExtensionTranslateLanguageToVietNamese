@@ -1,3 +1,4 @@
 API/public filter=lfs diff=lfs merge=lfs -text
 API/public/** filter=lfs diff=lfs merge=lfs -text
 /API/public/* filter=lfs diff=lfs merge=lfs -text
+/API/public/** filter=lfs diff=lfs merge=lfs -text
