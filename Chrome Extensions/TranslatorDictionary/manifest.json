@@ -1,0 +1,58 @@
+{
+  "manifest_version": 2,
+  "name": "Translator Dictionary",
+  "description": "This extension will translator English text to VietNamese text ",
+  "version": "1.0",
+  "default_locale": "en",
+  "background": {
+    "scripts": [
+      "background.js",
+      "/assets/js/jquery-3.4.1.min.js"
+    ],
+    "pages": [
+      "background.html"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Translator example",
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    "/assets/*",
+    "/dist/*",
+    "/css/*",
+    "/js/DomAnalys/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*",
+        "https://www.oxfordlearnersdictionaries.com/"
+      ],
+      "all_frames": true,
+      "js": [
+        "/assets/js/jquery-3.4.1.min.js",
+        "/assets/js/bootstrap-3.4.1.min.js",
+        "/js/content.js"
+      ],
+      "css": []
+    }
+  ],
+  "homepage_url": "https://www.facebook.com/vanlinh2018",
+  // "incognito": "not_allowed",
+  "incognito": "split",
+  "short_name": "Translator",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "declarativeContent",
+    "cookies",
+    "https://*/*",
+    "http://*/*",
+    "https://www.oxfordlearnersdictionaries.com/"
+   // "https://translatorapilinhpv.herokuapp.com/translate1"
+  ]
+}

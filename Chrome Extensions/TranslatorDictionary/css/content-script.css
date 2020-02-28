@@ -1,0 +1,146 @@
+/* Popup container - can be anything you want */
+.popup-trans {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* The actual popup */
+  .popup-trans .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+  }
+  
+  /* Popup arrow */
+  .popup-trans .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  /* Add animation (fade in the popup) */
+  @-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+  }
+  
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+  }
+
+  .modal-footer-trans{
+    text-align: center;
+    padding: 5px;
+    border-top: 1px solid rgb(229, 229, 229);
+  }
+  
+
+  .modal-body-trans {
+    position: relative;
+    padding-top: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+}
+
+  .modal-content-trans {
+    position: relative;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    font-size: 16px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    outline: 0;
+}
+
+
+  .modal-header-trans{
+    padding: 4px;
+  }
+
+
+  button.close-trans {
+     padding: 0; 
+     cursor: pointer; 
+     background: 0 0; 
+     border: 0 !important; 
+     -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;
+}
+
+
+.close-trans {
+  float: right;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  filter: alpha(opacity=20);
+  opacity: .2;
+}
+
+a{
+  cursor: pointer;
+}
+
+a:hover{
+  text-decoration: none !important;
+}
+
+h4{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+p{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#pro_0{
+  cursor: pointer;
+}
+
+#pro_1{
+  cursor: pointer;
+}
+
+#pro_0:hover{
+  color: blue;
+}
+
+#pro_0:active {
+  color: green;
+}
+
+#pro_1:hover{
+  color: blue;
+}
+#pro_1:active{
+  color: green !important;;
+}
