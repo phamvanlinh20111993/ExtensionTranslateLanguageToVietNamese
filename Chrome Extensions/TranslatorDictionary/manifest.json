@@ -36,6 +36,7 @@
       "js": [
         "/assets/js/jquery-3.4.1.min.js",
         "/assets/js/bootstrap-3.4.1.min.js",
+        "/assets/js/tesseract.min.js",
         "/js/content.js"
       ],
       "css": []

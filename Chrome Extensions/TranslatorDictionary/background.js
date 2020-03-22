@@ -59,7 +59,7 @@ chrome.runtime.onConnect.addListener(port => {
           }
         }, (result, err) => {
           if (err) {
-            console.log(err)
+            console.error(err)
             let responseFormat = {};
 
             lib.requestUrl({
@@ -77,7 +77,7 @@ chrome.runtime.onConnect.addListener(port => {
                 }
               }
             }, (r, e) => {
-              console.log(e, e ? 1 : 0)
+             
               if (e) {
                 sendResponse({ data: null, e: true })
               } else {
@@ -85,12 +85,14 @@ chrome.runtime.onConnect.addListener(port => {
                 if(!analysLaBanDom.checkWordIsCorrect()){
                   sendResponse({ data: null, e: true })
                 }
+
                 responseFormat.des = [];
                 analysLaBanDom.getPronoundAndSound(data => {
                   let getData = analysLaBanDom.getTranslateDes();
                   if(getData && typeof getData[0] === 'object'){
                     responseFormat.typeText = analysLaBanDom.getTranslateDes()[0].type;
                   }
+                  
                   responseFormat.trans = analysLaBanDom.getTranslateDes();
                   responseFormat.pro = data;
                   console.log('đata laban', responseFormat);

@@ -72,18 +72,26 @@ class GetDomDictLabanPage {
                         let type = replaceTagHTMLByString(e.innerHTML, '');
                         obj[ind] = { type, mean: [] }
                     }
-                    if (e.className == "green bold margin25 m-top15") {
+
+                    if (e.className == "grey bold margin25 m-top15") {
                         let mean = e.innerHTML || '',
                             indTmp = ind < 0 ? 0 : ind;
-                        if (ind < 0) {
-                            obj[indTmp] = { type: '', mean: [] }
+                        if (!obj[indTmp]) {
+                            obj[indTmp] = { type: 'Kiểu không xác định', mean: [] }
+                        }
+                        obj[indTmp].mean.push(mean)
+                    } else if (e.className == "green bold margin25 m-top15") {
+                        let mean = e.innerHTML || '',
+                            indTmp = ind < 0 ? 0 : ind;
+                        if (!obj[indTmp]) {
+                            obj[indTmp] = { type: 'Kiểu không xác định', mean: [] }
                         }
                         obj[indTmp].mean.push(mean)
                     }
                 }
             }
-
-            if(obj.length == 0){
+            // omg check
+            if (obj.length == 0) {
                 for (const e of childNode) {
                     if (e.nodeType != 3) {
                         if (e.className == "bg-grey bold font-large m-top20") {
@@ -94,8 +102,15 @@ class GetDomDictLabanPage {
                         if (e.className == "grey bold margin25 m-top15") {
                             let mean = e.innerHTML || '',
                                 indTmp = ind < 0 ? 0 : ind;
-                            if (ind < 0) {
-                                obj[indTmp] = { type: '', mean: [] }
+                            if (!obj[indTmp]) {
+                                obj[indTmp] = { type: 'Kiểu không xác định', mean: [] }
+                            }
+                            obj[indTmp].mean.push(mean)
+                        } else if (e.className == "grey bold margin25 m-top15") {
+                            let mean = e.innerHTML || '',
+                                indTmp = ind < 0 ? 0 : ind;
+                            if (!obj[indTmp]) {
+                                obj[indTmp] = { type: 'Kiểu không xác định', mean: [] }
                             }
                             obj[indTmp].mean.push(mean)
                         }
@@ -103,6 +118,8 @@ class GetDomDictLabanPage {
                 }
             }
         }
+
+        console.log('childNode', obj)
 
         return obj;
     }

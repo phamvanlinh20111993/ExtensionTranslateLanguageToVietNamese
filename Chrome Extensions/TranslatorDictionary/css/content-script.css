@@ -92,6 +92,10 @@
     appearance: none;
 }
 
+.translate{
+  margin-left: 5px;
+}
+
 
 .close-trans {
   float: right;

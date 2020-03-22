@@ -1,7 +1,10 @@
 
-matchWord = text => text && text.length > 0 && text.split(/\s+/) !== []
-    && text.split(/\s+/).length == 1
-    && text.trim().match(/^[A-Za-z]+$/);
+matchWord = text => {
+    return text && text.length > 0
+        && text.split(/\s+/) !== []
+        && text.split(/\s+/).length === 1
+    // && text.trim().match(/^[A-Za-z]+$/)
+}
 
 matchString = str => str && str.length > 0 && str.split(/\s+/).length > 0
     && /.*(?=.*[^\{\$%@#}]+).*/.test(str.trim())
@@ -11,7 +14,7 @@ formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim
 checkVietNameseChar = text =>
     /[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/.test(text)
 
-const ignoreTags = ["INPUT", "IMG", "TEXTAREA", "BUTTON"];
+const ignoreTags = ["INPUT", "TEXTAREA", "BUTTON"];
 
 const _wordType = {
     'adjective': 'adj',
@@ -131,6 +134,34 @@ modalTrans = obj => `<div class="modal-content-trans">
                      </div>`;
 
 
+contentLoading = (e) => {
+    $('body').append('<div id="loading-image-content"></div>');
+    $('#loading-image-content').addClass('popup-trans');
+    $('#loading-image-content').css({
+        position: 'absolute',
+        minWidth: '200px',
+        height: '100px',
+        background: 'white',
+        border: '1px solid rgba(0,0,0,.2)',
+        borderRadius: '6px',
+        boxShadow: '0 5px 15px rgba(0,0,0,.5)',
+        zIndex: 10000
+    });
+
+    let shadowDom = '<div id = "popup-modal-transl1"></div>';
+    $('#loading-image-content').append(shadowDom)
+    $('#loading-image-content').css({
+        left: e.pageX,
+        top: e.pageY + 10
+    });
+
+    const shadow = document.querySelector('#popup-modal-transl1').attachShadow({ mode: 'open' });
+    let content = '<h1>loading text...</h1>'
+
+    shadow.innerHTML = `${content}`;
+}
+
+
 showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText) => {
     let fromLanguage = `<b><i>${from}</i></b> to <b><i>vi</i></b>`;
     let url = `https://translate.google.com/#view=home&op=translate&sl=${from}&tl=vi&text=${encodeURI(highlightedText.toLowerCase())}`;
@@ -196,6 +227,7 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
             throw new Error(`Error: ${e}`);
         }
     }
+
     // click buhorn span
     let listenEvent = shadow.querySelector('#pro_0');
     if (listenEvent) {
@@ -226,6 +258,48 @@ $(document).mouseup(function (e) {
     if ($(e.target)[0] && ignoreTags.includes($(e.target)[0].tagName)) {
         $('#translator-popup-page').remove();
         return;
+    }
+
+    if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
+        $('#loading-image-content').remove();
+    }
+
+    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName)) {
+        console.log('data', $(e.target)[0].src)
+        // modal loading translate image text
+        contentLoading(e)
+        // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
+        Tesseract.recognize(
+            $(e.target)[0].src,
+            'eng',
+            { logger: m => console.log(m) }
+        ).then(({ data: { text } }) => {
+            console.log('image url ', text);
+
+            chrome.runtime.sendMessage({
+                signal: PARAGRAPH_INFORMATION,
+                value: text
+            }, function (response) {
+                if (response.err)
+                    return;
+                //check is translate image content
+                console.log('value', $('#loading-image-content') )
+                //loading content is showing
+                if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
+                    let textFromImage = text;
+                    let contentFormat = {};
+                    contentFormat.dom = contentTextP({
+                        highlightedText: textFromImage,
+                        translateText: response.data.text
+                    });
+                    contentFormat.sound = '';
+                    $('#loading-image-content').remove();
+                    showModalTrans(e, response.data.detectLanguage.signal,
+                        contentFormat, $('#translator-popup-page'), textFromImage);
+                }
+            });
+
+        })
     }
 
     let highlightedText = "";
@@ -272,12 +346,14 @@ $(document).mouseup(function (e) {
         if (matchWord(highlightedText)) {
 
             if (!checkVietNameseChar(highlightedText)) {
+
                 chrome.runtime.sendMessage({
                     signal: CHECK_LANGUAGE,
                     value: highlightedText
                 }, function (response) {
                     if (response.error)
                         return;
+
                     if (response.data) {
                         if (response.data.detectLanguage.signal != 'en') {
                             contentFormat.dom = contentTextP({ highlightedText, translateText: response.data.text })
@@ -285,6 +361,7 @@ $(document).mouseup(function (e) {
                                 contentFormat, $('#translator-popup-page'), highlightedText);
                             return;
                         } else {
+
                             chrome.runtime.sendMessage({
                                 signal: TEXT_INFORMATION,
                                 value: highlightedText
@@ -318,6 +395,7 @@ $(document).mouseup(function (e) {
                                     contentTextArg.highlightedText = highlightedText;
                                     contentFormat.dom = contentText(contentTextArg);
                                     contentFormat.pro = contentTextArg.pro;
+
                                     showModalTrans(e, response.data.detectLanguage.signal,
                                         contentFormat, $('#translator-popup-page'), highlightedText);
                                 }
@@ -329,7 +407,9 @@ $(document).mouseup(function (e) {
                 });
             }
         } else {
-            if (highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT) {
+
+            if (highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT ||
+                checkVietNameseChar(highlightedText)) {
                 return;
             }
 
@@ -339,7 +419,6 @@ $(document).mouseup(function (e) {
             }, function (response) {
                 if (response.err)
                     return;
-
                 contentFormat.dom = contentTextP({ highlightedText, translateText: response.data.text });
                 contentFormat.sound = '';
                 showModalTrans(e, response.data.detectLanguage.signal,
