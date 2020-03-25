@@ -11,6 +11,10 @@ matchString = str => str && str.length > 0 && str.split(/\s+/).length > 0
 
 formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim()
 
+checkURL = url => {
+    return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
+
 checkVietNameseChar = text =>
     /[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/.test(text)
 
@@ -151,8 +155,8 @@ contentLoading = (e) => {
     let shadowDom = '<div id = "popup-modal-transl1"></div>';
     $('#loading-image-content').append(shadowDom)
     $('#loading-image-content').css({
-        left: e.pageX,
-        top: e.pageY + 10
+        left: e.offsetX,
+        top: e.offsetY + 10
     });
 
     const shadow = document.querySelector('#popup-modal-transl1').attachShadow({ mode: 'open' });
@@ -193,9 +197,20 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
 
     let shadowDom = '<div id = "popup-modal-transl"> hi there </div>';
     $('#translator-popup-page').append(shadowDom)
+    /**
+     * screenX, screenY
+     * offsetX, offsetY
+     * clientX, clientY
+     * pageX, pageY
+     */
+
+    let selObj = window.getSelection();
+    let selRange = selObj.getRangeAt(0);
+    console.log('range ', selRange, selRange.startContainer.parentNode.offsetWidth,
+        selRange.startContainer.parentNode.offsetHeight)
     $('#translator-popup-page').css({
-        left: e.pageX,
-        top: e.pageY + 10
+        left: e.pageX + selRange.startOffset,
+        top: e.pageY + selRange.startContainer.parentNode.offsetHeight - 10
     });
 
     const urlCssContent = chrome.extension.getURL("css/content-script.css"),
@@ -251,6 +266,85 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
     }
 }
 
+getDataResponse = (highlightedText, callback) => {
+    if (matchWord(highlightedText)) {
+        if (!checkVietNameseChar(highlightedText)) {
+            chrome.runtime.sendMessage({
+                signal: CHECK_LANGUAGE,
+                value: highlightedText
+            }, function (response) {
+                if (response.error)
+                    callback(null, response.error)
+                /**
+                * format contentText() argument
+                * {
+                    highlightedText,
+                    typeText: 'noun',
+                    des: ['hello exclamation', 'from the Oxford Advanced Learner'],
+                    pro: [{ type: 'bre', pro: '/həˈləʊ/' },
+                            { type: 'nAmE', pro: '/həˈləʊ/' }],
+                    trans: [{ type: 'danh từ', mean: ['cân nặng', 'súc vật'] },
+                            { type: 'động từ', mean: ['chiều cao', 'cái con cặc nhé', 'vãi lon con chó']}]
+                *  }
+                **/
+                if (response.data) {
+                    if (response.data.detectLanguage.signal != 'en') {
+                        callback({
+                            lang: response.data.detectLanguage.signal, response
+                        }, null)
+                    } else {
+                        chrome.runtime.sendMessage({
+                            signal: TEXT_INFORMATION,
+                            value: highlightedText
+                        }, function (res) {
+                            if (res.err)
+                                callback({ lang: 'ja', response }, null)
+
+                            callback({
+                                lang: response.data.detectLanguage.signal, response: res
+                            }, null)
+                        })
+                    }
+                }
+            });
+        }
+    } else {
+        if (highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT ||
+            checkVietNameseChar(highlightedText)) {
+            callback(null, { error: `Tex too long: ${MAX_TEXT} or is vietnamese characters` })
+        }
+        chrome.runtime.sendMessage({
+            signal: PARAGRAPH_INFORMATION,
+            value: highlightedText
+        }, function (response) {
+            if (response.err)
+                callback(null, response.err)
+            callback({ type: PARAGRAPH_INFORMATION, response }, null)
+        });
+    }
+}
+
+checkTextImage = (imageUrl, callback) => {
+    // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
+    Tesseract.recognize(
+        imageUrl,
+        'eng',
+        { logger: m => console.log(m) }
+    ).then(({ data: { text } }) => {
+        console.log('image url ', text);
+        chrome.runtime.sendMessage({
+            signal: PARAGRAPH_INFORMATION,
+            value: text
+        }, function (response) {
+            if (response.err)
+                callback(null, response.err)
+            callback(response, null)
+        });
+
+    })
+}
+
+
 $(document).mouseup(function (e) {
     //  e.stopPropagation();
     //match text match is in input tag or textArea tag,... do nothing
@@ -264,40 +358,27 @@ $(document).mouseup(function (e) {
         $('#loading-image-content').remove();
     }
 
-    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName)) {
+    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
+        checkURL($(e.target))) {
         console.log('data', $(e.target)[0].src)
         // modal loading translate image text
         contentLoading(e)
-        // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
-        Tesseract.recognize(
-            $(e.target)[0].src,
-            'eng',
-            { logger: m => console.log(m) }
-        ).then(({ data: { text } }) => {
-            console.log('image url ', text);
-
-            chrome.runtime.sendMessage({
-                signal: PARAGRAPH_INFORMATION,
-                value: text
-            }, function (response) {
-                if (response.err)
-                    return;
-                //check is translate image content
-                console.log('value', $('#loading-image-content') )
-                //loading content is showing
-                if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
-                    let textFromImage = text;
-                    let contentFormat = {};
-                    contentFormat.dom = contentTextP({
-                        highlightedText: textFromImage,
-                        translateText: response.data.text
-                    });
-                    contentFormat.sound = '';
-                    $('#loading-image-content').remove();
-                    showModalTrans(e, response.data.detectLanguage.signal,
-                        contentFormat, $('#translator-popup-page'), textFromImage);
-                }
-            });
+        checkTextImage($(e.target).src, (response, error) => {
+            //check is translate image content
+            console.log('value', $('#loading-image-content'))
+            //loading content is showing
+            if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
+                let textFromImage = text;
+                let contentFormat = {};
+                contentFormat.dom = contentTextP({
+                    highlightedText: textFromImage,
+                    translateText: response.data.text
+                });
+                contentFormat.sound = '';
+                $('#loading-image-content').remove();
+                showModalTrans(e, response.data.detectLanguage.signal,
+                    contentFormat, $('#translator-popup-page'), textFromImage);
+            }
 
         })
     }
@@ -327,12 +408,9 @@ $(document).mouseup(function (e) {
             //      console.log('removed')
             $translatorPopupPage.remove();
         }, 200);
-
     }
-
     //when hight text
     if (matchString(highlightedText)) {
-
         // set data to storage
         chrome.storage.sync.set({
             chooseText: highlightedText
@@ -343,88 +421,42 @@ $(document).mouseup(function (e) {
         let contentFormat = {};
         highlightedText = formatText(highlightedText);
 
-        if (matchWord(highlightedText)) {
-
-            if (!checkVietNameseChar(highlightedText)) {
-
-                chrome.runtime.sendMessage({
-                    signal: CHECK_LANGUAGE,
-                    value: highlightedText
-                }, function (response) {
-                    if (response.error)
-                        return;
-
-                    if (response.data) {
-                        if (response.data.detectLanguage.signal != 'en') {
-                            contentFormat.dom = contentTextP({ highlightedText, translateText: response.data.text })
-                            showModalTrans(e, response.data.detectLanguage.signal,
-                                contentFormat, $('#translator-popup-page'), highlightedText);
-                            return;
-                        } else {
-
-                            chrome.runtime.sendMessage({
-                                signal: TEXT_INFORMATION,
-                                value: highlightedText
-                            }, function (res) {
-                                if (res.err) {
-                                    contentFormat.dom = contentTextP({ highlightedText, translateText: response.data.text })
-                                    showModalTrans(e, response.data.detectLanguage.signal,
-                                        contentFormat, $('#translator-popup-page'), highlightedText);
-                                } else {
-                                    /**
-                                     * format contentText() argument
-                                     * {
-                                         highlightedText,
-                                         typeText: 'noun',
-                                         des: ['hello exclamation', 'from the Oxford Advanced Learner'],
-                                         pro: [{ type: 'bre', pro: '/həˈləʊ/' },
-                                         { type: 'nAmE', pro: '/həˈləʊ/' }],
-                                         trans: [{ type: 'danh từ', mean: ['cân nặng', 'súc vật'] },
-                                         { type: 'động từ', mean: ['chiều cao', 'cái con cặc nhé', 'vãi lon con chó'] }]
-                                     }
-                                     * 
-                                     */
-                                    let contentTextArg = res.data;
-                                    console.log('contentTextArg', contentTextArg)
-                                    let typeText = contentTextArg.typeText || '';
-                                    typeText = typeText.split(",")
-                                    for (let i = 0; i < typeText.length; i++) {
-                                        typeText[i] = _wordType[typeText[i].trim().toLowerCase()]
-                                    }
-                                    contentTextArg.typeText = typeText.join(', ')
-                                    contentTextArg.highlightedText = highlightedText;
-                                    contentFormat.dom = contentText(contentTextArg);
-                                    contentFormat.pro = contentTextArg.pro;
-
-                                    showModalTrans(e, response.data.detectLanguage.signal,
-                                        contentFormat, $('#translator-popup-page'), highlightedText);
-                                }
-                            });
-                        }
+        getDataResponse(highlightedText, (response, error) => {
+            if (response) {
+                console.log(response)
+                if (response.lang) {
+                    if (response.lang != 'en') {
+                        let obj = { highlightedText, translateText: response.response.data.text }
+                        contentFormat.dom = contentTextP(obj)
+                        showModalTrans(e, response.response.data.detectLanguage.signal,
+                            contentFormat, $('#translator-popup-page'), highlightedText);
                     } else {
-                        return;
+                        let contentTextArg = response.response.data;
+                        let typeText = contentTextArg.typeText || '';
+                        console.log('contentTextArg', contentTextArg)
+
+                        typeText = typeText.split(",")
+                        for (let i = 0; i < typeText.length; i++)
+                            typeText[i] = _wordType[typeText[i].trim().toLowerCase()]
+
+                        contentTextArg.typeText = typeText.join(', ')
+                        contentTextArg.highlightedText = highlightedText;
+                        contentFormat.dom = contentText(contentTextArg);
+                        contentFormat.pro = contentTextArg.pro;
+
+                        showModalTrans(e, response.lang,
+                            contentFormat, $('#translator-popup-page'), highlightedText);
                     }
-                });
+                    //reponse.type
+                } else {
+                    let obj = { highlightedText, translateText: response.response.data.text }
+                    contentFormat.dom = contentTextP(obj);
+                    contentFormat.sound = '';
+                    showModalTrans(e, response.response.data.detectLanguage.signal,
+                        contentFormat, $('#translator-popup-page'), highlightedText);
+                }
             }
-        } else {
-
-            if (highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT ||
-                checkVietNameseChar(highlightedText)) {
-                return;
-            }
-
-            chrome.runtime.sendMessage({
-                signal: PARAGRAPH_INFORMATION,
-                value: highlightedText
-            }, function (response) {
-                if (response.err)
-                    return;
-                contentFormat.dom = contentTextP({ highlightedText, translateText: response.data.text });
-                contentFormat.sound = '';
-                showModalTrans(e, response.data.detectLanguage.signal,
-                    contentFormat, $('#translator-popup-page'), highlightedText);
-            });
-        }
+        })
 
         let browser = chrome || browser;
         browser.runtime.connect().onDisconnect.addListener(function () {
@@ -432,6 +464,7 @@ $(document).mouseup(function (e) {
             console.log("retry connectd")
         });
     }
+
 });
 
 $(document).keydown(function () {
