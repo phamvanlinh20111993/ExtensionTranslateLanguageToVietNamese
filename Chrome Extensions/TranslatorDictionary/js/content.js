@@ -198,19 +198,24 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
     let shadowDom = '<div id = "popup-modal-transl"> hi there </div>';
     $('#translator-popup-page').append(shadowDom)
     /**
+     * 
      * screenX, screenY
      * offsetX, offsetY
      * clientX, clientY
      * pageX, pageY
+     * 
      */
-
     let selObj = window.getSelection();
     let selRange = selObj.getRangeAt(0);
     console.log('range ', selRange, selRange.startContainer.parentNode.offsetWidth,
         selRange.startContainer.parentNode.offsetHeight)
+    
+    console.log('height', $('#translator-popup-page').width(), $('#translator-popup-page').height())
+
+    let widthPopup = $('#translator-popup-page').width()
     $('#translator-popup-page').css({
-        left: e.pageX + selRange.startOffset,
-        top: e.pageY + selRange.startContainer.parentNode.offsetHeight - 10
+        left: e.pageX + selRange.startOffset - widthPopup,
+        top: e.pageY + selRange.startContainer.parentNode.offsetHeight/2 - 20
     });
 
     const urlCssContent = chrome.extension.getURL("css/content-script.css"),

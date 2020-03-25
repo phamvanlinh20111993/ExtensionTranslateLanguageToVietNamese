@@ -2,7 +2,10 @@
 translateText = obj => {
     let content = ``
     for (data of obj.trans) {
-        content += `<div><label for="email">${data.type}</label>
+        content += `<div><label for="email">
+                            <span class="glyphicon glyphicon-tag"></span>&nbsp;
+                            ${data.type}
+                        </label>
                     <div class="container">`
         for (e of data.mean) {
             content += `<p><span class="glyphicon glyphicon-arrow-right"></span>
@@ -21,10 +24,10 @@ megaphone = totalPro => {
             if (setTime) {
                 clearTimeout(setTime)
             } else {
-                e.target.color = "red"
+                e.target.style.color = "red"
                 setTime = setTimeout(() => {
                     new Audio(url).play()
-                 //   e.target.color = "none"
+                    e.target.style.color = "black"
                 }, 300);
             }
         } catch (e) {
@@ -46,7 +49,8 @@ pronunciationText = obj => {
     for (e of obj.pro) {
         content += `<p style='font-size: 16px;'>
                   &nbsp;
-                  <span class="glyphicon glyphicon-bullhorn" id="speak-${index}"></span>
+                  <span class="glyphicon glyphicon-bullhorn" id="speak-${index}"
+                    style="cursor: pointer;"></span>
                   <i style="font-size:14px;"> (${e.type})</i>
                   <input type="hidden" value = "${e.url}" id="url-${index++}">
                   ${e.pro}
@@ -175,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 getDataResponse(highlightedText, (data, error) => {
                     if (data) {
                         showDomContext.innerHTML = domTextTranslate(data)
-                        megaphone(data.pro.length)
+                        megaphone(data.pro && data.pro.length || 0)
                     }
                 });
                 chrome.storage.sync.remove(['chooseText'], function (Items) { });
@@ -199,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 getDataResponse(highlightedText, (data, error) => {
                     if (data) {
                         showDomContext.innerHTML = domTextTranslate(data)
-                        megaphone(data.pro.length)
+                        megaphone(data.pro && data.pro.length || 0)
                     }
                 });
             }
@@ -225,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 // alert(JSON.stringify(data))
                 if (data) {
                     showDomContext.innerHTML = domTextTranslate(data)
-                    megaphone(data.pro.length)
+                    megaphone(data.pro && data.pro.length || 0)
                 }
             });
         }
