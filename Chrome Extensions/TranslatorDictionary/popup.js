@@ -24,7 +24,7 @@ megaphone = totalPro => {
             if (setTime) {
                 clearTimeout(setTime)
             } else {
-                e.target.style.color = "red"
+                e.target.style.color = "green"
                 setTime = setTimeout(() => {
                     new Audio(url).play()
                     e.target.style.color = "black"
@@ -36,21 +36,26 @@ megaphone = totalPro => {
     }
 
     for (let index = 0; index < totalPro; index++) {
-        document.getElementById(`speak-${index}`).addEventListener("click", e => {
-            let url = document.getElementById(`url-${index}`).value;
-            if (url && url.trim() != "")
-                getAudio(e, url)
-        });
+        if (document.getElementById(`speak-${index}`)) {
+            document.getElementById(`speak-${index}`).addEventListener("click", e => {
+                let url = document.getElementById(`url-${index}`).value;
+                if (url && url.trim() != "")
+                    getAudio(e, url)
+            });
+        }
     }
 }
 
 pronunciationText = obj => {
-    let content = ``, index = 0
+    let content = ``, index = 0, speakerNone = `<span class="glyphicon glyphicon-volume-off"
+    style="cursor: pointer; font-size: 18px;top: 3px;></span>`;
+    speaker = index => `<span class="glyphicon glyphicon-bullhorn" id="speak-${index}"
+                              style="cursor: pointer;top: 3px;"></span>`
     for (e of obj.pro) {
+        console.log(e.url)
         content += `<p style='font-size: 16px;'>
                   &nbsp;
-                  <span class="glyphicon glyphicon-bullhorn" id="speak-${index}"
-                    style="cursor: pointer;"></span>
+                  ${e.url && e.url.trim() != "" ? speaker(index) : speakerNone}
                   <i style="font-size:14px;"> (${e.type})</i>
                   <input type="hidden" value = "${e.url}" id="url-${index++}">
                   ${e.pro}
@@ -60,7 +65,6 @@ pronunciationText = obj => {
               ${content}
             </div>`
 }
-
 
 descriptionText = obj => {
     let content = ``
@@ -73,7 +77,6 @@ descriptionText = obj => {
     }
     return `<div>${content}</div>`
 }
-
 
 domTextTranslate = obj => {
     console.log(obj)
@@ -98,7 +101,6 @@ domTextTranslate = obj => {
 }
 
 formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim();
-
 
 getDataResponse = (highlightedText, callback) => {
 
