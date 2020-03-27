@@ -3,17 +3,16 @@ matchWord = text => {
     return text && text.length > 0
         && text.split(/\s+/) !== []
         && text.split(/\s+/).length === 1
-    // && text.trim().match(/^[A-Za-z]+$/)
+        && text.trim().match(/\\\/\.,\"\';:>|~`<_\?!@#\$%\=+-\{\}^&*\(\)/) == null
 }
 
 matchString = str => str && str.length > 0 && str.split(/\s+/).length > 0
-    && /.*(?=.*[^\{\$%@#}]+).*/.test(str.trim())
+    && str.trim().match(/[\{\$@&#\}`~]+/) == null
 
 formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim()
 
-checkURL = url => {
-    return url && (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
-}
+checkURLImage = url => url && url.match(/\.(jpeg|jpg|gif|png)$/) != null
+
 
 checkVietNameseChar = text =>
     /[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/.test(text)
@@ -145,6 +144,8 @@ modalTrans = obj => `<div class="modal-content-trans">
 
 
 contentLoading = e => {
+    e.preventDefault();
+    e.stopPropagation();
     $('body').append('<div id="loading-image-content"></div>');
     $('#loading-image-content').addClass('popup-trans');
     $('#loading-image-content').css({
@@ -155,22 +156,27 @@ contentLoading = e => {
         border: '1px solid rgba(0,0,0,.2)',
         borderRadius: '6px',
         boxShadow: '0 5px 15px rgba(0,0,0,.5)',
-        zIndex: 10000
+        zIndex: 10000000
     });
 
     let shadowDom = '<div id = "popup-modal-transl1"></div>';
     $('#loading-image-content').append(shadowDom)
     $('#loading-image-content').css({
-        left: e.offsetX,
-        top: e.offsetY + 10
+        left: e.pageX,
+        top: e.pageY + 10
     });
-
+    
     const shadow = document.querySelector('#popup-modal-transl1').attachShadow({ mode: 'open' });
-    let content = '<h1>loading text...</h1>'
+    let content = ` <h3> Loading text ... </h3>
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>`
 
     shadow.innerHTML = `${content}`;
 }
-
+//https://stackoverflow.com/questions/15195209/how-to-get-font-size-in-html
 //https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
 showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText) => {
     let fromLanguage = `<b><i>${from}</i></b> to <b><i>vi</i></b>`;
@@ -251,8 +257,8 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
         $('#translator-popup-page').remove();
     });
 
+    let setTime;
     playSound = url => {
-        let setTime;
         try {
             if (setTime) {
                 clearTimeout(setTime)
@@ -330,9 +336,10 @@ getDataResponse = (highlightedText, callback) => {
             });
         }
     } else {
-        if (highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT ||
+        if ((highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT) ||
             checkVietNameseChar(highlightedText)) {
             callback(null, { error: `Tex too long: ${MAX_TEXT} or is vietnamese characters` })
+            return;
         }
         chrome.runtime.sendMessage({
             signal: PARAGRAPH_INFORMATION,
@@ -345,25 +352,37 @@ getDataResponse = (highlightedText, callback) => {
     }
 }
 
+let checkTimeOutTranslateText;
 checkTextImage = (imageUrl, callback) => {
     // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
-    console.log('vl1', chrome.runtime)
-    Tesseract.recognize(
-        imageUrl,
-        'eng',
-        { logger: m => console.log(m) }
-    ).then(({ data: { text } }) => {
-        chrome.runtime.sendMessage({
-            signal: PARAGRAPH_INFORMATION,
-            value: text
-        }, function (response) {
-            if (response.err)
-                callback(null, response.err)
-            response.textInImage = text
-            callback(response, null)
-        });
+    try {
+        if (checkTimeOutTranslateText) {
+            clearTimeout(checkTimeOutTranslateText)
+        }
 
-    })
+        checkTimeOutTranslateText = setTimeout(() => {
+            Tesseract.recognize(
+                imageUrl,
+                'eng',
+                { logger: m => console.info(m) }
+            ).then(({ data: { text } }) => {
+                chrome.runtime.sendMessage({
+                    signal: PARAGRAPH_INFORMATION,
+                    value: text
+                }, function (response) {
+                    if (response.err)
+                        callback(null, response.err)
+                    response.textInImage = text
+                    callback(response, null)
+                });
+
+            })
+        }, 400);
+
+    } catch (e) {
+        callback(null, `Error: ${e}`);
+    }
+
 }
 
 
@@ -383,14 +402,17 @@ $(document).mouseup(function (e) {
         return;
     }
 
-    if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
-        $('#loading-image-content').remove();
-    }
+    !($(e.target)[0] 
+        && ['IMG', 'img'].includes($(e.target)[0].tagName)) 
+        && $('#loading-image-content') 
+        && $('#loading-image-content').length > 0 
+        && $('#loading-image-content').remove();
 
-    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) && checkURL($(e.target)[0].src)) {
+    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) && checkURLImage($(e.target)[0].src)) {
         console.log('data', $(e.target)[0].src)
         // modal loading translate image text
-        contentLoading(e)
+        !$('#loading-image-content').length  &&  contentLoading(e);
+
         checkTextImage($(e.target)[0].src, (response, error) => {
             //check is translate image content
             console.log('value', $('#loading-image-content'))
@@ -495,7 +517,7 @@ $(document).mouseup(function (e) {
 });
 
 $(document).keydown(function () {
-    console.log("key down")
+    //   console.log("key down")
     let $translatorPopupPage = $('#translator-popup-page');
     if ($translatorPopupPage.length > 0) {
         $translatorPopupPage.remove();

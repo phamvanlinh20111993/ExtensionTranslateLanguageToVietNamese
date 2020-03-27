@@ -148,6 +148,12 @@ getDataResponse = (highlightedText, callback) => {
             });
         }
     } else {
+
+        if (checkVietNameseChar(highlightedText)) {
+            callback(null, { error: `Tex too long: ${MAX_TEXT} or is vietnamese characters` })
+            return;
+        }
+
         chrome.runtime.sendMessage({
             signal: PARAGRAPH_INFORMATION,
             value: highlightedText
