@@ -20,6 +20,10 @@ chrome.runtime.onConnect.addListener(port => {
 
 (async () => {
 
+    const LABAN_URL = "https://dict.laban.vn";
+    const OXFORD_DICT_URL = "https://www.oxfordlearnersdictionaries.com";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com";
+
     const srcOxford = chrome.runtime.getURL("./js/DomAnalys/analysOxfordlearnersdictionariesPage.js");
     const analysOxford = await import(srcOxford);
 
@@ -42,7 +46,7 @@ chrome.runtime.onConnect.addListener(port => {
             if (request.signal === "TEXT_INFORMATION") {
 
                 lib.requestUrl({
-                    url: 'https://www.oxfordlearnersdictionaries.com',
+                    url: OXFORD_DICT_URL,
                     params: [{ value: 'definition', type: 'String' },
                     { value: 'english', type: 'String' },
                     { value: request.value, type: 'String' }],
@@ -63,7 +67,7 @@ chrome.runtime.onConnect.addListener(port => {
                         let responseFormat = {};
 
                         lib.requestUrl({
-                            url: 'https://dict.laban.vn',
+                            url: LABAN_URL,
                             params: [{ value: 'find', type: 'String' }],
                             query: { type: 1, query: request.value },
                             requestType: "GET",
@@ -118,7 +122,7 @@ chrome.runtime.onConnect.addListener(port => {
                         }
 
                         lib.requestUrl({
-                            url: 'https://dict.laban.vn',
+                            url: LABAN_URL,
                             params: [{ value: 'find', type: 'String' }],
                             query: { type: 1, query: request.value },
                             requestType: "GET",
@@ -187,7 +191,7 @@ chrome.runtime.onConnect.addListener(port => {
 
             if (request.signal === "PARAGRAPH_INFORMATION" || request.signal === "CHECK_LANGUAGE") {
                 lib.requestUrl({
-                    url: 'https://translatorapilinhpv.herokuapp.com',
+                    url: API_TRANSLATE_PARAGRAPH_URL,
                     params: [{ value: 'translate1' }],
                     query: { to: 'vi', translateText: request.value },
                     requestType: "GET",

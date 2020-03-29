@@ -1,4 +1,11 @@
 
+
+const TEXT_INFORMATION = "TEXT_INFORMATION";
+const PARAGRAPH_INFORMATION = "PARAGRAPH_INFORMATION";
+const MAX_TEXT = 5000;
+const CHECK_LANGUAGE = "CHECK_LANGUAGE";
+const TRANS_TEXT = "TRANS_TEXT";
+
 translateText = obj => {
     let content = ``
     for (data of obj.trans) {
@@ -18,18 +25,16 @@ translateText = obj => {
 }
 
 megaphone = totalPro => {
+
+    let setTime;
     getAudio = (e, url) => {
-        let setTime;
         try {
-            if (setTime) {
-                clearTimeout(setTime)
-            } else {
-                e.target.style.color = "green"
-                setTime = setTimeout(() => {
-                    new Audio(url).play()
-                    e.target.style.color = "black"
-                }, 300);
-            }
+            setTime && clearTimeout(setTime)
+            e.target.style.color = "green"
+            setTime = setTimeout(() => {
+                new Audio(url).play()
+                e.target.style.color = "black"
+            }, 300);
         } catch (e) {
             throw new Error(`Error: ${e}`);
         }
@@ -39,8 +44,7 @@ megaphone = totalPro => {
         if (document.getElementById(`speak-${index}`)) {
             document.getElementById(`speak-${index}`).addEventListener("click", e => {
                 let url = document.getElementById(`url-${index}`).value;
-                if (url && url.trim() != "")
-                    getAudio(e, url)
+                url && url.trim() != "" && getAudio(e, url)
             });
         }
     }
@@ -105,13 +109,13 @@ formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim
 getDataResponse = (highlightedText, callback) => {
 
     matchWord = text => {
-        return text && text.length > 0
+        return text && text.trim().length > 0
             && text.split(/\s+/) !== []
             && text.split(/\s+/).length === 1
-        // && text.trim().match(/^[A-Za-z]+$/)
+            && text.match(/\\\/\.,\"\';:>|~`<_\?!@#\$%\=+-\{\}^&*\(\)/) == null
     }
 
-    matchString = str => str && str.length > 0 && str.split(/\s+/).length > 0
+    matchString = str => str && str.trim().length > 0 && str.split(/\s+/).length > 0
         && /.*(?=.*[^\{\$%@#}]+).*/.test(str.trim())
 
     formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim()
@@ -158,21 +162,13 @@ getDataResponse = (highlightedText, callback) => {
             signal: PARAGRAPH_INFORMATION,
             value: highlightedText
         }, function (response) {
-            if (response.err)
-                callback(null, response.err)
-
+            response.err && callback(null, response.err)
             let obj = { content: highlightedText, translate: response.data.text }
             callback(obj, null)
         });
     }
 }
 
-
-const TEXT_INFORMATION = "TEXT_INFORMATION";
-const PARAGRAPH_INFORMATION = "PARAGRAPH_INFORMATION";
-const MAX_TEXT = 5000;
-const CHECK_LANGUAGE = "CHECK_LANGUAGE";
-const TRANS_TEXT = "TRANS_TEXT";
 
 document.addEventListener('DOMContentLoaded', function (event) {
 

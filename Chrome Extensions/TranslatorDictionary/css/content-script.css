@@ -50,7 +50,10 @@
 
   .modal-footer-trans{
     text-align: center;
-    padding: 5px;
+    padding-top: 4px;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-bottom: 4px;
     border-top: 1px solid rgb(229, 229, 229);
   }
   
