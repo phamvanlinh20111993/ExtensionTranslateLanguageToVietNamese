@@ -183,7 +183,7 @@ contentLoading = e => {
     shadow.innerHTML = `${content}`;
 }
 
-getOffset = e => {
+getOffsetDimension = e => {
     const rect = e.getBoundingClientRect();
     return {
         left: rect.left + window.scrollX,
@@ -211,12 +211,9 @@ preventClickInSideRange = (id, e) => {
 }
 
 calPositionShowPopup = e => {
-    console.log(window.getSelection, window.getSelection(),
-        window.getSelection && window.getSelection(),
-    )
     const isSelectText = window.getSelection && window.getSelection();
     if (isSelectText && isSelectText.rangeCount > 0) {
-        let positionText = getOffset(window.getSelection().getRangeAt(0));
+        let positionText = getOffsetDimension(window.getSelection().getRangeAt(0));
         /**
         * 
         * screenX, screenY
@@ -250,8 +247,6 @@ calPositionShowPopup = e => {
         //     positionY = positionText.bottom - 0.63 * heightPopup - 7
         // }
 
-        console.log('vh', window.getComputedStyle(document.getElementById('popup-modal-transl')).height,
-            positionText.right, positionText.left, widthPopup, heightPopup)
         $('#translator-popup-page').css({
             left: positionX,
             top: positionY
@@ -280,6 +275,8 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
         border: '1px solid rgba(0,0,0,.2)',
         borderRadius: '6px',
         boxShadow: '0 5px 15px rgba(0,0,0,.5)',
+        // padding: '0',
+        // margin: '0',
         zIndex: 10000000
     });
 
@@ -295,9 +292,17 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
                                 @import "${urlCssBoostrap}";
                             </style>`;
     shadow.innerHTML = `${importCss}${content}`;
+    //cal position to show modal
     calPositionShowPopup(e)
+    console.log('real height',  shadow.querySelectorAll('.modal-content-trans'),
+    shadow.querySelectorAll('.modal-header-trans'),
+    shadow.querySelectorAll('.modal-header-trans')[0].offsetHeight,
+    shadow.querySelectorAll('.modal-header-trans')[0].scrollHeight,
+    shadow.querySelectorAll('.modal-header-trans')[0].offsetWidth,
+    shadow.querySelector('.modal-body-trans').offsetHeight,
+    shadow.querySelector('.modal-footer-trans').offsetHeight)
 
-    // click button x
+    // click button x on corner right of modal
     shadow.querySelector('.close-trans').addEventListener('click', function (e) {
         e.stopPropagation();
         e.stopImmediatePropagation();
@@ -378,7 +383,6 @@ getDataResponse = (highlightedText, callback) => {
 
         if ((highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT) ||
             checkVietNameseChar(highlightedText)) {
-            console.log('fuck', checkVietNameseChar(highlightedText), highlightedText.split(/\s+/).length)
             callback(null, { error: `Tex too long: ${MAX_TEXT} or is vietnamese characters` })
             return;
         }
