@@ -1,4 +1,3 @@
-
 const ignoreTags = ["INPUT", "TEXTAREA", "BUTTON"];
 const _wordType = {
     'adjective': 'adj',
@@ -25,21 +24,22 @@ const MAX_TEXT = 5000;
 const CHECK_LANGUAGE = "CHECK_LANGUAGE";
 const TRANS_TEXT = "TRANS_TEXT";
 const GOOGLE_TRANSLATE_URL = "https://translate.google.com/";
-const VIETNAMESE_CHARACTERS = `ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯ
-                              ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
-                              ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
-const VIEWPORT_WIDTH = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-const VIEWPORT_HEIGHT = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+// const VIETNAMESE_CHARACTERS = `ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯ
+//                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
+//                               ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
 
 matchWord = text => {
-    return text && text.trim().length > 0
-        && text.split(/\s+/) !== []
-        && text.split(/\s+/).length === 1
-        && text.match(/\\\/\.,\"\';:>|~`<_\?!@#\$%\=+-\{\}^&*\(\)/) == null
+    return text && text.trim().length > 0 &&
+        text.split(/\s+/) !== [] &&
+        text.split(/\s+/).length === 1 &&
+        text.match(/\\\/\.,\"\';:>|~`<_\?!@#\$%\=+-\{\}^&*\(\)/) == null
 }
 
-matchString = str => str && str.trim().length > 0 && str.split(/\s+/).length > 0
-    && str.match(/[\{\$@&#\}`~]+/) == null
+matchString = str => str && str.trim().length > 0 && str.split(/\s+/).length > 0 &&
+    str.match(/[\{\$@&#\}`~]+/) == null
+    // not html tag
+    &&
+    !(/<\/?[a-z][\s\S]*>/i.test(str))
 
 formatText = text => text && text.length > 0 && text.split(/\s+/).join(" ").trim()
 
@@ -49,14 +49,16 @@ checkVietNameseChar = text => /[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâã
 
 removeWindowSelectionText = () => window.getSelection
     // Chrome
-    && ((window.getSelection().empty && window.getSelection().empty())
+    &&
+    ((window.getSelection().empty && window.getSelection().empty())
         // Firefox
-        || (window.getSelection().removeAllRanges && window.getSelection().removeAllRanges())
+        ||
+        (window.getSelection().removeAllRanges && window.getSelection().removeAllRanges())
         // IE
-        || (document.selection && document.selection.empty()))
+        ||
+        (document.selection && document.selection.empty()))
 
 $(document).off("cut copy paste", "**");
-
 
 contentTextP = obj => `<div>
                             <div>
@@ -153,7 +155,7 @@ modalTrans = obj => `<div class="modal-content-trans">
                      </div>`;
 
 
-contentLoading = e => {
+contentLoading = (e, textShowUp) => {
     e.preventDefault();
     e.stopPropagation();
     $('body').append('<div id="loading-image-content"></div>');
@@ -176,11 +178,16 @@ contentLoading = e => {
         top: e.pageY + 10
     });
 
-    const shadow = document.querySelector('#popup-modal-loading').attachShadow({ mode: 'open' });
-    let content = ` <h3> Loading text ... </h3>
+    const urlCssFontAwesome = chrome.extension.getURL("/assets/css/font-awesome.min.css");
+    const importCss = `<style>
+                                @import "${urlCssFontAwesome}";
+                            </style>`;
+    const shadow = document.querySelector('#popup-modal-loading').attachShadow({
+        mode: 'open'
+    });
+    let content = ` <h3>${textShowUp}</h3>
                     <i class="fa fa-spinner fa-spin" style="font-size:24px;color:red"></i>`
-
-    shadow.innerHTML = `${content}`;
+    shadow.innerHTML = `${importCss}${content}`;
 }
 
 getOffsetDimension = e => {
@@ -189,7 +196,11 @@ getOffsetDimension = e => {
         left: rect.left + window.scrollX,
         top: rect.top + window.scrollY,
         right: rect.right + window.scrollX,
-        bottom: rect.bottom + window.scrollY
+        bottom: rect.bottom + window.scrollY,
+        leftViewPort: rect.left,
+        topViewPort: rect.top,
+        rightViewPort: rect.right,
+        bottomViewPort: rect.bottom,
     };
 }
 
@@ -197,8 +208,8 @@ preventClickInSideRange = (id, e) => {
 
     if ($(`#${id}`) && $(`#${id}`).length > 0) {
         //click inside popup do nothing
-        if (e.target.id == id
-            || ($(e.target).parents($(`#${id}`)) && $(e.target).parents($(`#${id}`))[0].id == id)) {
+        if (e.target.id == id ||
+            ($(e.target).parents($(`#${id}`)) && $(e.target).parents($(`#${id}`))[0].id == id)) {
             e.preventDefault();
             e.stopImmediatePropagation();
             e.stopPropagation();
@@ -212,40 +223,42 @@ preventClickInSideRange = (id, e) => {
 
 calPositionShowPopup = e => {
     const isSelectText = window.getSelection && window.getSelection();
+    // const VIEWPORT_WIDTH = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    // const VIEWPORT_HEIGHT = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    const VIEWPORT_HEIGHT = $(window).height();
+    const VIEWPORT_WIDTH = $(window).width();
     if (isSelectText && isSelectText.rangeCount > 0) {
-        let positionText = getOffsetDimension(window.getSelection().getRangeAt(0));
+        let coordSelectedText = getOffsetDimension(window.getSelection().getRangeAt(0));
         /**
-        * 
-        * screenX, screenY
-        * offsetX, offsetY
-        * clientX, clientY
-        * pageX, pageY
-        * 
-        */
+         * 
+         * screenX, screenY
+         * offsetX, offsetY
+         * clientX, clientY
+         * pageX, pageY
+         * 
+         */
         //  let selObj = window.getSelection();
         //  let selRange = selObj.getRangeAt(0);
         //  https://www.w3schools.com/jquery/html_outerheight.asp
         let widthPopup = $('#translator-popup-page').outerWidth()
         let heightPopup = $('#translator-popup-page').outerHeight()
-        let positionX = positionText.left + parseInt((positionText.right - positionText.left) / 2) - parseInt(widthPopup / 2)
-        let positionY = positionText.bottom + 7
-
+        let positionX = coordSelectedText.left + parseInt((coordSelectedText.right - coordSelectedText.left) / 2) - parseInt(widthPopup / 2)
+        let positionY = coordSelectedText.bottom + 7;
         //check left corner
-        if (positionText.left < widthPopup / 2) {
-            console.log('positionText.left < widthPopup / 2')
-            positionX = positionText.left + parseInt((positionText.right - positionText.left) / 2)
+        if (coordSelectedText.left < widthPopup / 2) {
+            positionX = coordSelectedText.left + parseInt((coordSelectedText.right - coordSelectedText.left) / 2)
         }
         //check right corner
-        if (VIEWPORT_WIDTH - positionText.right < widthPopup) {
-            console.log('VIEWPORT_WIDTH - positionText.right < widthPopup')
-            positionX = positionText.left + parseInt((positionText.right - positionText.left) / 2) - widthPopup
+        if (VIEWPORT_WIDTH - coordSelectedText.right < widthPopup / 2) {
+            positionX = coordSelectedText.left + parseInt((coordSelectedText.right - coordSelectedText.left) / 2) - widthPopup
         }
         //check top corner : not necessary it is default show up
+        //.................
+
         //check bottom corner
-        // console.log('vh', positionText.bottom, heightPopup, VIEWPORT_HEIGHT)
-        // if (positionText.bottom - window.scrollY + heightPopup > VIEWPORT_HEIGHT) {
-        //     positionY = positionText.bottom - 0.63 * heightPopup - 7
-        // }
+        if (coordSelectedText.topViewPort > VIEWPORT_HEIGHT - coordSelectedText.bottomViewPort) {
+            positionY = coordSelectedText.top - heightPopup - 4
+        }
 
         $('#translator-popup-page').css({
             left: positionX,
@@ -262,7 +275,11 @@ calPositionShowPopup = e => {
 showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText) => {
     let fromLanguage = `<b><i>${from}</i></b> to <b><i>vi</i></b>`;
     let url = `${GOOGLE_TRANSLATE_URL}#view=home&op=translate&sl=${from}&tl=vi&text=${encodeURI(highlightedText.toLowerCase())}`;
-    let content = modalTrans({ url, title: fromLanguage, contentFormat: contentFormat.dom })
+    let content = modalTrans({
+        url,
+        title: fromLanguage,
+        contentFormat: contentFormat.dom
+    })
 
     $('body').append('<div id="translator-popup-page"></div>');
     $('#translator-popup-page').addClass('popup-trans');
@@ -280,27 +297,22 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
         zIndex: 10000000
     });
 
-    let shadowDom = '<div id = "popup-modal-transl"> hi there </div>';
+    let shadowDom = '<div id="popup-modal-transl"></div>';
     $('#translator-popup-page').append(shadowDom)
 
     const urlCssContent = chrome.extension.getURL("/css/content-script.css");
-    const urlCssBoostrap = chrome.extension.getURL("/dist/css/bootstrap.min.css");
+    const urlCssBoostrap = chrome.extension.getURL("/assets/css/bootstrap.min.css");
 
-    const shadow = document.querySelector('#popup-modal-transl').attachShadow({ mode: 'open' });
+    const shadow = document.querySelector('#popup-modal-transl').attachShadow({
+        mode: 'open'
+    });
     const importCss = `<style>
                                 @import "${urlCssContent}";
                                 @import "${urlCssBoostrap}";
                             </style>`;
     shadow.innerHTML = `${importCss}${content}`;
     //cal position to show modal
-    calPositionShowPopup(e)
-    console.log('real height',  shadow.querySelectorAll('.modal-content-trans'),
-    shadow.querySelectorAll('.modal-header-trans'),
-    shadow.querySelectorAll('.modal-header-trans')[0].offsetHeight,
-    shadow.querySelectorAll('.modal-header-trans')[0].scrollHeight,
-    shadow.querySelectorAll('.modal-header-trans')[0].offsetWidth,
-    shadow.querySelector('.modal-body-trans').offsetHeight,
-    shadow.querySelector('.modal-footer-trans').offsetHeight)
+    setTimeout(() => calPositionShowPopup(e), 100)
 
     // click button x on corner right of modal
     shadow.querySelector('.close-trans').addEventListener('click', function (e) {
@@ -361,7 +373,8 @@ getDataResponse = (highlightedText, callback) => {
                 if (response.data) {
                     if (response.data.detectLanguage.signal != 'en') {
                         callback({
-                            lang: response.data.detectLanguage.signal, response
+                            lang: response.data.detectLanguage.signal,
+                            response
                         }, null)
                     } else {
                         chrome.runtime.sendMessage({
@@ -369,10 +382,14 @@ getDataResponse = (highlightedText, callback) => {
                             value: highlightedText
                         }, function (res) {
                             if (res.err)
-                                callback({ lang: 'ja', response }, null)
+                                callback({
+                                    lang: 'ja',
+                                    response
+                                }, null)
 
                             callback({
-                                lang: response.data.detectLanguage.signal, response: res
+                                lang: response.data.detectLanguage.signal,
+                                response: res
                             }, null)
                         })
                     }
@@ -383,7 +400,9 @@ getDataResponse = (highlightedText, callback) => {
 
         if ((highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT) ||
             checkVietNameseChar(highlightedText)) {
-            callback(null, { error: `Tex too long: ${MAX_TEXT} or is vietnamese characters` })
+            callback(null, {
+                error: `Tex too long: ${MAX_TEXT} or is vietnamese characters`
+            })
             return;
         }
         chrome.runtime.sendMessage({
@@ -391,7 +410,10 @@ getDataResponse = (highlightedText, callback) => {
             value: highlightedText
         }, function (response) {
             response.err && callback(null, response.err)
-            callback({ type: PARAGRAPH_INFORMATION, response }, null)
+            callback({
+                type: PARAGRAPH_INFORMATION,
+                response
+            }, null)
         });
     }
 }
@@ -404,9 +426,14 @@ checkTextImage = (imageUrl, callback) => {
         checkTimeOutTranslateText = setTimeout(() => {
             Tesseract.recognize(
                 imageUrl,
-                'eng',
-                { logger: m => console.info(m) }
-            ).then(({ data: { text } }) => {
+                'eng', {
+                    logger: m => console.info(m)
+                }
+            ).then(({
+                data: {
+                    text
+                }
+            }) => {
                 chrome.runtime.sendMessage({
                     signal: PARAGRAPH_INFORMATION,
                     value: text
@@ -438,9 +465,9 @@ $(document).mouseup(function (e) {
         return;
     }
 
-    $('#loading-image-content')
-        && $('#loading-image-content').length > 0
-        && $('#loading-image-content').remove();
+    $('#loading-image-content') &&
+        $('#loading-image-content').length > 0 &&
+        $('#loading-image-content').remove();
 
     let highlightedText = "";
     if (window.getSelection) {
@@ -451,9 +478,9 @@ $(document).mouseup(function (e) {
 
     let $translatorPopupPage = $('#translator-popup-page');
     // hidden popup when nothing text is choosen or click outside popup
-    if ($translatorPopupPage.length > 0
-        && !$translatorPopupPage.is(e.target)
-        && $translatorPopupPage.has(e.target).length === 0) {
+    if ($translatorPopupPage.length > 0 &&
+        !$translatorPopupPage.is(e.target) &&
+        $translatorPopupPage.has(e.target).length === 0) {
         //   console.log('click outside popup')
         timeoutShowPopUp && clearTimeout(timeoutShowPopUp);
         timeoutShowPopUp = setTimeout(() => {
@@ -478,7 +505,10 @@ $(document).mouseup(function (e) {
             if (response) {
                 if (response.lang) {
                     if (response.lang != 'en') {
-                        let obj = { highlightedText, translateText: response.response.data.text }
+                        let obj = {
+                            highlightedText,
+                            translateText: response.response.data.text
+                        }
                         contentFormat.dom = contentTextP(obj)
                         showModalTrans(e, response.response.data.detectLanguage.signal,
                             contentFormat, $('#translator-popup-page'), highlightedText);
@@ -500,7 +530,10 @@ $(document).mouseup(function (e) {
                     }
                     //reponse.type
                 } else {
-                    let obj = { highlightedText, translateText: response.response.data.text }
+                    let obj = {
+                        highlightedText,
+                        translateText: response.response.data.text
+                    }
                     contentFormat.dom = contentTextP(obj);
                     contentFormat.sound = '';
                     showModalTrans(e, response.response.data.detectLanguage.signal,
@@ -527,17 +560,25 @@ $(document).dblclick(function (e) {
     if (preventClickInSideRange("translator-popup-page", e))
         return;
 
-    !$(e.target)[0]
-        && ['IMG', 'img'].includes($(e.target)[0].tagName)
-        && $('#loading-image-content')
-        && $('#loading-image-content').length > 0
-        && $('#loading-image-content').remove();
+    !$(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
+        $('#loading-image-content') &&
+        $('#loading-image-content').length > 0 &&
+        $('#loading-image-content').remove();
 
-    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName)
-        && checkURLImage($(e.target)[0].src)) {
+    if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
+        checkURLImage($(e.target)[0].src)) {
         // modal loading translate image text
-        !$('#loading-image-content').length && contentLoading(e);
+        !$('#loading-image-content').length && contentLoading(e, 'Loading text ...');
         checkTextImage($(e.target)[0].src, (response, error) => {
+
+            if (!response) {
+                $('#loading-image-content').remove();
+                contentLoading(e, 'Image not contains any text.')
+                checkContentTimeout && clearTimeout(checkContentTimeout)
+                checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2500)
+                return;
+            }
+
             //check is translate image content
             //loading content is showing
             if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
@@ -560,8 +601,18 @@ $(document).dblclick(function (e) {
 $(document).keydown(function (e) {
     let $translatorPopupPage = $('#translator-popup-page');
     if ($translatorPopupPage.length > 0) {
-        //       $translatorPopupPage.remove();
+        // $translatorPopupPage.remove();
     }
 });
 
-//$(document).click(() => removeWindowSelectionText())
+$(document).click((e) => {
+    const isSelectText = window.getSelection && window.getSelection();
+    if (isSelectText && isSelectText.rangeCount > 0) {
+        let coordSelectedText = getOffsetDimension(window.getSelection().getRangeAt(0));
+        let clickCoordX = e.pageX,
+            clickCoordY = e.pageY;
+        !(clickCoordX > coordSelectedText.left - 10 && clickCoordX < coordSelectedText.right + 10 &&
+            clickCoordY > coordSelectedText.top - 10 && clickCoordY < coordSelectedText.bottom + 10) &&
+        removeWindowSelectionText()
+    }
+})

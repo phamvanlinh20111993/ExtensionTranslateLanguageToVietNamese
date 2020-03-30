@@ -47,10 +47,22 @@ chrome.runtime.onConnect.addListener(port => {
 
                 lib.requestUrl({
                     url: OXFORD_DICT_URL,
-                    params: [{ value: 'definition', type: 'String' },
-                    { value: 'english', type: 'String' },
-                    { value: request.value, type: 'String' }],
-                    query: { q: request.value },
+                    params: [{
+                            value: 'definition',
+                            type: 'String'
+                        },
+                        {
+                            value: 'english',
+                            type: 'String'
+                        },
+                        {
+                            value: request.value,
+                            type: 'String'
+                        }
+                    ],
+                    query: {
+                        q: request.value
+                    },
                     requestType: "GET",
                     data: {},
                     formatReponse: {
@@ -68,8 +80,14 @@ chrome.runtime.onConnect.addListener(port => {
 
                         lib.requestUrl({
                             url: LABAN_URL,
-                            params: [{ value: 'find', type: 'String' }],
-                            query: { type: 1, query: request.value },
+                            params: [{
+                                value: 'find',
+                                type: 'String'
+                            }],
+                            query: {
+                                type: 1,
+                                query: request.value
+                            },
                             requestType: "GET",
                             data: {},
                             formatReponse: {
@@ -83,11 +101,17 @@ chrome.runtime.onConnect.addListener(port => {
                         }, (r, e) => {
 
                             if (e) {
-                                sendResponse({ data: null, e: true })
+                                sendResponse({
+                                    data: null,
+                                    e: true
+                                })
                             } else {
                                 const analysLaBanDom = new analysLaBan.GetDomDictLabanPage(r, request.value);
                                 if (!analysLaBanDom.checkWordIsCorrect()) {
-                                    sendResponse({ data: null, e: true })
+                                    sendResponse({
+                                        data: null,
+                                        e: true
+                                    })
                                 }
 
                                 responseFormat.des = [];
@@ -100,13 +124,17 @@ chrome.runtime.onConnect.addListener(port => {
                                     responseFormat.trans = analysLaBanDom.getTranslateDes();
                                     responseFormat.pro = data;
                                     console.log('đata laban', responseFormat);
-                                    sendResponse({ data: responseFormat, err: false })
+                                    sendResponse({
+                                        data: responseFormat,
+                                        err: false
+                                    })
                                 })
                             }
                         });
                     } else {
                         const analysOxfordDom = new analysOxford.GetDomOxfordPage(result);
-                        let responseFormat = {}, getDataFalse = false;
+                        let responseFormat = {},
+                            getDataFalse = false;
 
                         // console.log('dd', analysOxfordDom.checkWordIsCorrect())
                         // console.log('dd', analysOxfordDom.getTypeWord())
@@ -123,8 +151,14 @@ chrome.runtime.onConnect.addListener(port => {
 
                         lib.requestUrl({
                             url: LABAN_URL,
-                            params: [{ value: 'find', type: 'String' }],
-                            query: { type: 1, query: request.value },
+                            params: [{
+                                value: 'find',
+                                type: 'String'
+                            }],
+                            query: {
+                                type: 1,
+                                query: request.value
+                            },
                             requestType: "GET",
                             data: {},
                             formatReponse: {
@@ -138,12 +172,18 @@ chrome.runtime.onConnect.addListener(port => {
                         }, (result, err) => {
                             if (err) {
                                 console.log(err)
-                                sendResponse({ data: null, err: true })
+                                sendResponse({
+                                    data: null,
+                                    err: true
+                                })
                             } else {
                                 const analysLaBanDom = new analysLaBan.GetDomDictLabanPage(result, request.value);
                                 if (!getDataFalse) {
                                     responseFormat.trans = analysLaBanDom.getTranslateDes();
-                                    sendResponse({ data: responseFormat, err: false })
+                                    sendResponse({
+                                        data: responseFormat,
+                                        err: false
+                                    })
                                 } else {
                                     responseFormat.des = [];
                                     analysLaBanDom.getPronoundAndSound((data) => {
@@ -151,7 +191,10 @@ chrome.runtime.onConnect.addListener(port => {
                                         responseFormat.trans = analysLaBanDom.getTranslateDes();
                                         responseFormat.pro = data;
                                         console.log('đata laban', responseFormat);
-                                        sendResponse({ data: responseFormat, err: false })
+                                        sendResponse({
+                                            data: responseFormat,
+                                            err: false
+                                        })
                                     })
                                 }
                             }
@@ -192,17 +235,28 @@ chrome.runtime.onConnect.addListener(port => {
             if (request.signal === "PARAGRAPH_INFORMATION" || request.signal === "CHECK_LANGUAGE") {
                 lib.requestUrl({
                     url: API_TRANSLATE_PARAGRAPH_URL,
-                    params: [{ value: 'translate1' }],
-                    query: { to: 'vi', translateText: request.value },
+                    params: [{
+                        value: 'translate1'
+                    }],
+                    query: {
+                        to: 'vi',
+                        translateText: request.value
+                    },
                     requestType: "GET",
                     data: {},
                 }, (result, err) => {
                     if (err) {
                         console.log(err)
-                        sendResponse({ data: null, err: true })
+                        sendResponse({
+                            data: null,
+                            err: true
+                        })
                     } else {
                         console.log(result)
-                        sendResponse({ data: result, err: false })
+                        sendResponse({
+                            data: result,
+                            err: false
+                        })
                     }
                 });
             }

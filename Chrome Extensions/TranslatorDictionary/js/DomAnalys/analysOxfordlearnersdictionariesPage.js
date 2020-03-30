@@ -1,10 +1,9 @@
-
 import {
     standardStr,
     replaceTagHTMLByString,
     getValueOnAttr
 }
-    from './lib.js';
+from './lib.js';
 
 class GetDomOxfordPage {
 
@@ -14,8 +13,8 @@ class GetDomOxfordPage {
 
     checkWordIsCorrect = () => this.dom.getElementsByClassName("definition-title")[0]
 
-    getWord = () => this.dom.getElementsByClassName("headword")[0]
-        && this.dom.getElementsByClassName("headword")[0].innerHTML
+    getWord = () => this.dom.getElementsByClassName("headword")[0] &&
+        this.dom.getElementsByClassName("headword")[0].innerHTML
 
     getTypeWord = () => {
         let content = this.dom.getElementsByClassName("pos")[0].innerHTML || '';
@@ -33,7 +32,11 @@ class GetDomOxfordPage {
             if (phoneBr) {
                 url = phoneBr.getElementsByClassName("sound audio_play_button pron-uk icon-audio")[0]
                 pro = phoneBr.getElementsByClassName("phon")[0]
-                obj[0] = { type: 'BrE', url: getValueOnAttr(url, 'data-src-mp3'), pro: pro.innerHTML }
+                obj[0] = {
+                    type: 'BrE',
+                    url: getValueOnAttr(url, 'data-src-mp3'),
+                    pro: pro.innerHTML
+                }
 
             }
 
@@ -41,7 +44,11 @@ class GetDomOxfordPage {
             if (phoneBr) {
                 url = phonsNAm.getElementsByClassName("sound audio_play_button pron-us icon-audio")[0]
                 pro = phonsNAm.getElementsByClassName("phon")[0]
-                obj[1] = { type: 'nAmE', url: getValueOnAttr(url, 'data-src-mp3'), pro: pro.innerHTML }
+                obj[1] = {
+                    type: 'nAmE',
+                    url: getValueOnAttr(url, 'data-src-mp3'),
+                    pro: pro.innerHTML
+                }
 
             }
         }
@@ -77,4 +84,6 @@ class GetDomOxfordPage {
 
 }
 
-export { GetDomOxfordPage };
+export {
+    GetDomOxfordPage
+};

@@ -16,4 +16,8 @@
   + On the corner left click Load unpacked button
   + Point the path to the Translator / Chrome Extensions folder then choose TranslatorDictionary folder
   
+<<<<<<< HEAD
   => Enjoy and if you have any suggestions, please contribute us, thank you very much
+=======
+  => Enjoy and if you have any suggestions, please contribute us, thank you very much
+>>>>>>> c315c201df93f93b400c3f8e6441eb8770a6cbc5

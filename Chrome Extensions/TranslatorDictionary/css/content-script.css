@@ -7,10 +7,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
-  
-  /* The actual popup */
-  .popup-trans .popuptext {
+}
+
+/* The actual popup */
+.popup-trans .popuptext {
     visibility: hidden;
     width: 160px;
     background-color: #555;
@@ -23,10 +23,10 @@
     bottom: 125%;
     left: 50%;
     margin-left: -80px;
-  }
-  
-  /* Popup arrow */
-  .popup-trans .popuptext::after {
+}
+
+/* Popup arrow */
+.popup-trans .popuptext::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -35,30 +35,40 @@
     border-width: 5px;
     border-style: solid;
     border-color: #555 transparent transparent transparent;
-  }
-  
-  /* Add animation (fade in the popup) */
-  @-webkit-keyframes fadeIn {
-    from {opacity: 0;} 
-    to {opacity: 1;}
-  }
-  
-  @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity:1 ;}
-  }
+}
 
-  .modal-footer-trans{
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-footer-trans {
     text-align: center;
     padding-top: 4px;
     padding-right: 5px;
     padding-left: 5px;
     padding-bottom: 4px;
     border-top: 1px solid rgb(229, 229, 229);
-  }
-  
+}
 
-  .modal-body-trans {
+
+.modal-body-trans {
     position: relative;
     padding-top: 2px;
     padding-left: 10px;
@@ -66,88 +76,101 @@
     padding-bottom: 5px;
 }
 
-  .modal-content-trans {
+.modal-content-trans {
     position: relative;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #999;
-    border: 1px solid rgba(0,0,0,.2);
+    border: 1px solid rgba(0, 0, 0, .2);
     font-size: 16px;
     border-radius: 6px;
-    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
-    box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     outline: 0;
 }
 
 
-  .modal-header-trans{
+.modal-header-trans {
     padding: 4px;
-  }
+}
 
 
-  button.close-trans {
-     padding: 0; 
-     cursor: pointer; 
-     background: 0 0; 
-     border: 0 !important; 
-     -webkit-appearance: none; 
+button.close-trans {
+    padding: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0 !important;
+    -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 }
 
-.translate{
-  margin-left: 5px;
+.translate {
+    margin-left: 5px;
 }
 
 
 .close-trans {
-  float: right;
-  font-size: 21px;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  filter: alpha(opacity=20);
-  opacity: .2;
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    filter: alpha(opacity=20);
+    opacity: .2;
 }
 
-a{
-  cursor: pointer;
+a {
+    cursor: pointer;
 }
 
-a:hover{
-  text-decoration: none !important;
+a:hover {
+    text-decoration: none !important;
 }
 
-h4{
-  margin: 0 !important;
-  padding: 0 !important;
+h4 {
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-p{
-  margin: 0 !important;
-  padding: 0 !important;
+p {
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-#pro_0{
-  cursor: pointer;
+#pro_0 {
+    cursor: pointer;
 }
 
-#pro_1{
-  cursor: pointer;
+#pro_1 {
+    cursor: pointer;
 }
 
-#pro_0:hover{
-  color: blue;
+#pro_0:hover {
+    color: blue;
 }
 
 #pro_0:active {
-  color: green;
+    color: green;
 }
 
-#pro_1:hover{
-  color: blue;
+#pro_1:hover {
+    color: blue;
 }
-#pro_1:active{
-  color: green !important;;
+
+#pro_1:active {
+    color: green !important;
+    ;
+}
+
+
+@font-face {
+    font-family: "Glyphicons Halflings";
+    src: url(/assets/fonts/glyphicons-halflings-regular.eot);
+    src: url(/assets/fonts/glyphicons-halflings-regular.eot?#iefix) format("embedded-opentype"),
+        url(/assets/fonts/glyphicons-halflings-regular.woff2) format("woff2"),
+        url(/assets/fonts/glyphicons-halflings-regular.woff) format("woff"),
+        url(/assets/fonts/glyphicons-halflings-regular.ttf) format("truetype"),
+        url(/assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format("svg");
 }

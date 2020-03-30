@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Translator Dictionary",
-  "description": "This extension will translator English text to VietNamese text ",
+  "description": "This extension will translate any language text, image to VietNamese text ",
   "version": "1.0",
   "default_locale": "en",
   "background": {
@@ -21,7 +21,6 @@
   },
   "web_accessible_resources": [
     "/assets/*",
-    "/dist/*",
     "/css/*",
     "/js/DomAnalys/*"
   ],
@@ -54,6 +53,6 @@
     "https://*/*",
     "http://*/*",
     "https://www.oxfordlearnersdictionaries.com/"
-   // "https://translatorapilinhpv.herokuapp.com/translate1"
+    // "https://translatorapilinhpv.herokuapp.com/translate1"
   ]
 }
