@@ -1,4 +1,4 @@
-# Translator
+# Translator version 1.0
 
  - Features:
   + Translate word of any language to vietnamese
