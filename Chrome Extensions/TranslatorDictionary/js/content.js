@@ -470,11 +470,9 @@ $(document).mouseup(function (e) {
         $('#loading-image-content').remove();
 
     let highlightedText = "";
-    if (window.getSelection) {
-        highlightedText = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-        highlightedText = document.selection.createRange().text;
-    }
+    (window.getSelection && (highlightedText = window.getSelection().toString())) ||
+    (document.selection && document.selection.type != "Control" && (
+        highlightedText = document.selection.createRange().text))
 
     let $translatorPopupPage = $('#translator-popup-page');
     // hidden popup when nothing text is choosen or click outside popup
@@ -611,7 +609,8 @@ $(document).click((e) => {
         let coordSelectedText = getOffsetDimension(window.getSelection().getRangeAt(0));
         let clickCoordX = e.pageX,
             clickCoordY = e.pageY;
-        !(clickCoordX > coordSelectedText.left - 10 && clickCoordX < coordSelectedText.right + 10 &&
+
+        (coordSelectedText.bottom - coordSelectedText.top >= 7) && (coordSelectedText.right - coordSelectedText.left >= 5) && !(clickCoordX > coordSelectedText.left - 10 && clickCoordX < coordSelectedText.right + 10 &&
             clickCoordY > coordSelectedText.top - 10 && clickCoordY < coordSelectedText.bottom + 10) &&
         removeWindowSelectionText()
     }
