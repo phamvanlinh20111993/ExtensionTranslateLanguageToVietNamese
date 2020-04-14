@@ -272,6 +272,29 @@ calPositionShowPopup = e => {
     }
 }
 
+clickSound = () => {
+
+    let setTime;
+    playSound = url => {
+        try {
+            setTime && clearTimeout(setTime)
+            setTime = setTimeout(new Audio(url).play(), 300);
+        } catch (e) {
+            throw new Error(`Error: ${e}`);
+        }
+    }
+    // click buhorn span
+    for (let ind = 0; ind < 2; ind++) {
+        let listenEvent = shadow.querySelector(`#pro_${ind}`);
+        listenEvent && listenEvent.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            // do somthing there
+            playSound(contentFormat.pro[ind].url)
+        });
+    }
+}
+
 showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText) => {
     let fromLanguage = `<b><i>${from}</i></b> to <b><i>vi</i></b>`;
     let url = `${GOOGLE_TRANSLATE_URL}#view=home&op=translate&sl=${from}&tl=vi&text=${encodeURI(highlightedText.toLowerCase())}`;
@@ -321,32 +344,7 @@ showModalTrans = (e, from, contentFormat, $translatorPopupPage, highlightedText)
         $('#translator-popup-page').remove();
     });
 
-    let setTime;
-    playSound = url => {
-        try {
-            setTime && clearTimeout(setTime)
-            setTime = setTimeout(new Audio(url).play(), 300);
-        } catch (e) {
-            throw new Error(`Error: ${e}`);
-        }
-    }
-
-    // click buhorn span
-    let listenEvent = shadow.querySelector('#pro_0');
-    listenEvent && listenEvent.addEventListener('click', function (e) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        // do somthing there
-        playSound(contentFormat.pro[0].url)
-    });
-    // click buhorn span
-    let listenEventN = shadow.querySelector('#pro_1');
-    listenEventN && listenEventN.addEventListener('click', function (e) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        // do somthing there    
-        playSound(contentFormat.pro[1].url)
-    });
+    clickSound();
 }
 
 getDataResponse = (highlightedText, callback) => {

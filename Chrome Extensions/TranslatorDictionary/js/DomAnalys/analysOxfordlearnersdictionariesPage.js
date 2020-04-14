@@ -37,7 +37,6 @@ class GetDomOxfordPage {
                     url: getValueOnAttr(url, 'data-src-mp3'),
                     pro: pro.innerHTML
                 }
-
             }
 
             let phonsNAm = container.getElementsByClassName("phons_n_am")[0]
