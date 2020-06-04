@@ -17,14 +17,25 @@
         analysisDataUI.setData(highlightedText);
         // get data response after analysis
         const response = await analysisDataUI.getDataResponse();
-      //  alert(JSON.stringify(response))
+        //  alert('data'  +  JSON.stringify(response))
         if (!helpers.isNull(response) && !response.err) {
 
-            const data = response.type == helpers.TEXT_INFORMATION ? response.response.data : {
-                translate: response.response ? response.response.data.text : response.data.text
-            };
-
-       //     alert('data' + JSON.stringify(data))
+            let data
+            // string can not be stranslated
+            if (typeof response.response === 'string') {
+                data = {
+                    translate: response.response
+                }
+                // string is translated and is paragraph
+            } else if (response.type == helpers.PARAGRAPH_INFORMATION) {
+                data = {
+                    translate: response.response.data.text
+                }
+                // string is translated and is text
+            } else {
+                data = response.response.data
+            }
+            //  alert('data' + JSON.stringify(data) + "----------------------" +  JSON.stringify(response))
             data.content = highlightedText;
             showDomContext.innerHTML = buildPopupUI.showContentUI(data)
             buildPopupUI.megaphone(data.pro && data.pro.length || 0)

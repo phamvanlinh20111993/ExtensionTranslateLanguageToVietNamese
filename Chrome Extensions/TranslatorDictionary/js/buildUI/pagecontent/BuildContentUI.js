@@ -207,7 +207,7 @@ class BuildContentUI extends AbstractBuildContentUI {
         //fix target type language showing
         const targetType = 'vi';
 
-        const fromLanguage = `<b><i>${from.toLocaleUpperCase()}</i></b> to <b><i>${targetType.toLocaleUpperCase()}</i></b>`;
+        const fromLanguage = `<b><i>${from.toUpperCase()}</i></b> to <b><i>${targetType.toUpperCase()}</i></b>`;
         const url = `${GOOGLE_TRANSLATE_URL}#view=home&op=translate&sl=${from}&tl=vi&text=${encodeURI(highlightedText.toLowerCase())}`;
         const content = this.#modalTrans({
             url,

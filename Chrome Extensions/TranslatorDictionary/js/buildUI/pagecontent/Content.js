@@ -3,32 +3,22 @@
     const helpers = await import(helperSrc);
     const [IGNORETAGS,
         WORDTYPELIST,
-        TEXT_INFORMATION,
         PARAGRAPH_INFORMATION,
-        MAX_TEXT,
-        CHECK_LANGUAGE,
-        matchWord,
         matchString,
         formatText,
         checkURLImage,
         removeWindowSelectionText,
         getOffsetDimension,
-        preventClickInSideContentRange,
-        checkVietNameseChar
+        preventClickInSideContentRange
     ] = [helpers.IGNORETAGS,
         helpers.WORDTYPELIST,
-        helpers.TEXT_INFORMATION,
         helpers.PARAGRAPH_INFORMATION,
-        helpers.MAX_TEXT,
-        helpers.CHECK_LANGUAGE,
-        helpers.matchWord,
         helpers.matchString,
         helpers.formatText,
         helpers.checkURLImage,
         helpers.removeWindowSelectionText,
         helpers.getOffsetDimension,
-        helpers.preventClickInSideContentRange,
-        helpers.checkVietNameseChar
+        helpers.preventClickInSideContentRange
     ];
 
     const builContentUIUrl = chrome.extension.getURL('./js/buildUI/pagecontent/BuildContentUI.js');
@@ -39,71 +29,42 @@
     const analysisDataUIInstance = await import(analysisDataUIUrl);
     const analysisDataUI = new analysisDataUIInstance.AnalysisDataUI();
 
-    getDataResponse = (highlightedText, callback) => {
 
-        if (matchWord(highlightedText)) {
-            if (!checkVietNameseChar(highlightedText)) {
+    function showContentUITranslateWord(e, highlightedText, response) {
+        const contentTextArg = response;
+        const contentFormat = {};
+        let typeText = contentTextArg.typeText || '';
 
-                chrome.runtime.sendMessage({
-                    signal: CHECK_LANGUAGE,
-                    value: highlightedText,
-                    currentType: 'en',
-                    targetType: 'vi'
-                }, function (response) {
+        typeText = typeText.split(",")
+        for (let i = 0; i < typeText.length; i++)
+            typeText[i] = WORDTYPELIST[typeText[i].trim().toLowerCase()]
 
-                    if (response.err)
-                        callback(null, response.err)
+        contentTextArg.typeText = typeText.join(', ')
+        contentTextArg.highlightedText = highlightedText;
+        contentFormat.dom = buildContentUIClass.contentText(contentTextArg);
+        contentFormat.pro = contentTextArg.pro;
 
-                    if (response.data) {
-                        if (response.data.detectLanguage.signal != 'en') {
-                            callback({
-                                lang: response.data.detectLanguage.signal,
-                                response
-                            }, null)
-                        } else {
-                            chrome.runtime.sendMessage({
-                                signal: TEXT_INFORMATION,
-                                value: highlightedText,
-                                currentType: 'en',
-                                targetType: 'vi'
-                            }, function (res) {
-                                if (res.err)
-                                    callback({
-                                        lang: 'ja',
-                                        response
-                                    }, null)
+        buildContentUIClass.showContentUI({
+            e,
+            from: response.lang,
+            contentFormat,
+            highlightedText
+        });
+    }
 
-                                callback({
-                                    lang: response.data.detectLanguage.signal,
-                                    response: res
-                                }, null)
-                            })
-                        }
-                    }
-                });
-            }
-        } else {
-
-            if ((highlightedText && highlightedText.split(/\s+/).length > MAX_TEXT) ||
-                checkVietNameseChar(highlightedText)) {
-                callback(null, {
-                    error: `Tex too long: ${MAX_TEXT} or is vietnamese characters`
-                })
-                return;
-            }
-            chrome.runtime.sendMessage({
-                signal: PARAGRAPH_INFORMATION,
-                value: highlightedText,
-                currentType: 'en',
-                targetType: 'vi'
-            }, function (response) {
-                response.err && callback(null, response.err)
-                callback({
-                    type: PARAGRAPH_INFORMATION,
-                    response
-                }, null)
-            });
+    function showContentUITranslateString(e, highlightedText, response) {
+        const contentFormat = {};
+        const obj = {
+            highlightedText,
+            translateText: response.translateText
         }
+        contentFormat.dom = buildContentUIClass.contentTextP(obj)
+        buildContentUIClass.showContentUI({
+            e,
+            from: response.lang,
+            contentFormat,
+            highlightedText
+        });
     }
 
     let checkTimeOutTranslateText;
@@ -186,73 +147,34 @@
             }, function () {
                 console.info("Settings saved.");
             });
-
-            const contentFormat = {};
-
             //standard input text
             highlightedText = formatText(highlightedText);
-
             analysisDataUI.setData(highlightedText);
             // get data response after analysis
-            const response1 = await analysisDataUI.getDataResponse();
-            console.log(response1, '---------------------------------------------------------------------------------------------')
+            const response = await analysisDataUI.getDataResponse();
+            //  alert('data'  +  JSON.stringify(response))
+            if (!helpers.isNull(response) && !response.err) {
 
-            getDataResponse(highlightedText, (response, error) => {
-                if (response) {
-
-                    console.log(response)
-
-                    if (response.lang) {
-                        if (response.lang != 'en') {
-                            const obj = {
-                                highlightedText,
-                                translateText: response.response.data.text
-                            }
-                            contentFormat.dom = buildContentUIClass.contentTextP(obj)
-                            buildContentUIClass.showContentUI({
-                                e,
-                                from: response.response.data.detectLanguage.signal,
-                                contentFormat,
-                                highlightedText
-                            });
-                        } else {
-                            const contentTextArg = response.response.data;
-                            let typeText = contentTextArg.typeText || '';
-
-                            typeText = typeText.split(",")
-                            for (let i = 0; i < typeText.length; i++)
-                                typeText[i] = WORDTYPELIST[typeText[i].trim().toLowerCase()]
-
-                            contentTextArg.typeText = typeText.join(', ')
-                            contentTextArg.highlightedText = highlightedText;
-                            contentFormat.dom = buildContentUIClass.contentText(contentTextArg);
-                            contentFormat.pro = contentTextArg.pro;
-
-                            buildContentUIClass.showContentUI({
-                                e,
-                                from: response.lang,
-                                contentFormat,
-                                highlightedText
-                            });
-                        }
-                        //reponse.type
-                    } else {
-                        const obj = {
-                            highlightedText,
-                            translateText: response.response.data.text
-                        }
-                        contentFormat.dom = buildContentUIClass.contentTextP(obj);
-                        contentFormat.sound = '';
-                        buildContentUIClass.showContentUI({
-                            e,
-                            from: response.response.data.detectLanguage.signal,
-                            contentFormat,
-                            highlightedText
-                        });
+                let data
+                // string can not be stranslated, then return this input
+                if (typeof response.response === 'string') {
+                    data = {
+                        translateText: response.response,
+                        lang: 'ja'
                     }
+                    showContentUITranslateString(e, highlightedText, data)
+                } else if (response.type == helpers.PARAGRAPH_INFORMATION) {
+                    data = {
+                        translateText: response.response.data.text,
+                        lang: response.lang
+                    }
+                    showContentUITranslateString(e, highlightedText, data)
+                } else {
+                    data = response.response.data;
+                    data.lang = response.lang
+                    showContentUITranslateWord(e, highlightedText, data)
                 }
-            })
-
+            }
             const browser = chrome || browser;
             browser.runtime.connect().onDisconnect.addListener(function () {
                 // clean up when content script gets disconnected
@@ -305,7 +227,6 @@
                         e,
                         from: response.data.detectLanguage.signal,
                         contentFormat,
-                        $translatorPopupPage: $('#translator-popup-page'),
                         textFromImage
                     });
                 }
@@ -330,10 +251,10 @@
 
             (coordSelectedText.bottom - coordSelectedText.top >= 7) &&
             (coordSelectedText.right - coordSelectedText.left >= 5) &&
-            !(clickCoordX > coordSelectedText.left - 10 &&
-                clickCoordX < coordSelectedText.right + 10 &&
-                clickCoordY > coordSelectedText.top - 10 &&
-                clickCoordY < coordSelectedText.bottom + 10) &&
+            !(clickCoordX > coordSelectedText.left - 40 &&
+                clickCoordX < coordSelectedText.right + 40 &&
+                clickCoordY > coordSelectedText.top - 40 &&
+                clickCoordY < coordSelectedText.bottom + 40) &&
             removeWindowSelectionText()
         }
     })

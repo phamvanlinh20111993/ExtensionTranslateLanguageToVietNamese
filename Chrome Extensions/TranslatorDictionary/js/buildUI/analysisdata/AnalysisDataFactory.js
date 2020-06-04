@@ -12,7 +12,10 @@ import {
 } from '../../Helper.js';
 
 import {
-    CHECK_LANGUAGE
+    CHECK_LANGUAGE,
+    PARAGRAPH_INFORMATION, 
+    TEXT_INFORMATION,
+    matchWord
 } from '../Helpers.js';
 
 //call api
@@ -63,9 +66,12 @@ async function analysisDataInstanceAd(originType, targetType, data) {
 async function analysisDataInstance(targetType, data) {
 
     let objectType = await checkLanguageType(data, targetType);
-    console.info('object type in analysisDataInstance - AnalysDataFactory', objectType)
     let instance;
+
+    console.info('object type in analysisDataInstance - AnalysDataFactory', objectType)
+
     switch (objectType.type) {
+        
         case ENGLISH_TYPE:
             instance = new AnalysisEnglishData(targetType, data, objectType.data);
             break;
@@ -76,7 +82,9 @@ async function analysisDataInstance(targetType, data) {
 
         default:
             instance = !objectType ? null : {
-                response: objectType.data
+                response: objectType.data,
+                lang: objectType.type,
+                type: matchWord(objectType.data.text || '') ? TEXT_INFORMATION : PARAGRAPH_INFORMATION,
             };
             break;
     }

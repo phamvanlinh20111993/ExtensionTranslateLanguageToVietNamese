@@ -35,6 +35,8 @@ const GOOGLE_TRANSLATE_URL = "https://translate.google.com/";
 const FOOTER_NAME = "© 2020 HanhNguyen - Translator Extension";
 
 const STRING_EMPTY = "";
+
+const SPACE_CHARACTER = " ";
 // const VIETNAMESE_CHARACTERS = `ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯ
 //                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
 //                               ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
@@ -105,6 +107,22 @@ function isEmpty(data) {
     } else {
         return false;
     }
+}
+
+
+function standardizeString(string){
+    if(isNull(string)) return STRING_EMPTY;
+
+    string = string.trim();
+    string = string.split(/\s+/);
+    string = string.join(SPACE_CHARACTER)
+
+    let res = ""
+    for(const ch of string){
+        
+    }
+
+    return string;
 }
 
 function removeWindowSelectionText() {

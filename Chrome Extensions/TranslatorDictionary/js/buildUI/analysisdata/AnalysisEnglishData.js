@@ -50,6 +50,7 @@ class AnalysisEnglishData extends AbstractAnalysisData {
                         resolve(null)
                     resolve({
                         type: checkTypeMessageSignal,
+                        lang: ENGLISH_TYPE,
                         response: res
                     })
                 })

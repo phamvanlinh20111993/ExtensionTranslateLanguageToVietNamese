@@ -18,7 +18,7 @@ class GetDomOxfordPage extends AbstractDefinitionWord {
         this.#dom = dom || document.body.appendChild(document.createElement("BODY"))
     }
 
-    checkWordIsCorrect = () =>{
+    checkWordIsCorrect = () => {
         this.#dom.getElementsByClassName("definition-title")[0]
     }
 
@@ -77,9 +77,16 @@ class GetDomOxfordPage extends AbstractDefinitionWord {
             desList = containerS.getElementsByClassName("def");
         }
 
+        // if (containerM) {
+        //     desList = containerM.getElementsByClassName("def") || [];
+        // }
+        // if (containerS) {
+        //     desList = desList.concat(containerS.getElementsByClassName("def") || []);
+        // }
+
         let ind = 0;
         while (desList && ind < desList.length) {
-            let str = desList[ind++].innerHTML;
+            let str = desList[ind++].innerHTML || "";
             str = replaceTagHTMLByString(str, '');
             str = standardStr(str)
             obj.push(str)

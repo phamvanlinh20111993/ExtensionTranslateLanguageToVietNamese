@@ -8,6 +8,9 @@ import {
     PARAGRAPH_INFORMATION
 } from '../Helpers.js';
 
+import {
+    VIETNAMESE_TYPE
+} from '../../Helper.js';
 
 class AnalysisVietNameseData extends AbstractAnalysisData {
 
@@ -35,7 +38,8 @@ class AnalysisVietNameseData extends AbstractAnalysisData {
         if (this.#dataInput) {
             return new Promise(revolve => revolve({
                 type: this.isWord() ? TEXT_INFORMATION : PARAGRAPH_INFORMATION,
-                response: this.#dataResponse
+                response: this.#dataResponse,
+                lang: VIETNAMESE_TYPE
             }));
         }
         return new Promise(resolve => resolve(this.#dataResponse))
