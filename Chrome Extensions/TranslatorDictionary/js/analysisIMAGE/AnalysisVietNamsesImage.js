@@ -1,25 +1,29 @@
 import {
-    AbstrachAnalysisImage
+    AbstractAnalysisImage
 } from './AbstractAnalysisImage.js';
 
-class AnalysisVietNamesesTextImage extends AbstrachAnalysisImage {
+import {
+    VIETNAMESE_TYPE
+} from '../Helper.js';
 
-    #checkTimeOutTranslateText;
+class AnalysisVietNamesesTextImage extends AbstractAnalysisImage {
+
+    #checkTimeOutTranslateText = null;
     #imageUrl;
 
-    constructor(imageUrl, checkTimeOutTranslateText) {
+    constructor(imageUrl) {
+        super();
         this.#imageUrl = imageUrl;
-        this.#checkTimeOutTranslateText = checkTimeOutTranslateText;
     }
 
-    checkTextImage = (callback) => {
+    getImageText = (callback) => {
         // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
         try {
             this.#checkTimeOutTranslateText && clearTimeout(this.#checkTimeOutTranslateText)
             this.#checkTimeOutTranslateText = setTimeout(() => {
                 Tesseract.recognize(
                     this.#imageUrl,
-                    'vie', {
+                    VIETNAMESE_TYPE + 'e', {
                         logger: m => console.info(m)
                     }
                 ).then(({
@@ -27,18 +31,10 @@ class AnalysisVietNamesesTextImage extends AbstrachAnalysisImage {
                         text
                     }
                 }) => {
-                    chrome.runtime.sendMessage({
-                        signal: PARAGRAPH_INFORMATION,
-                        value: text,
-                        currentType: 'en',
-                        targetType: 'vi'
-                    }, function (response) {
-                        if (response.err)
-                            callback(null, response.err)
-                        response.textInImage = text
-                        callback(response, null)
-                    });
                     Tesseract.terminate();
+                    callback({
+                        textInImage: text
+                    })
                 })
             }, 400);
         } catch (e) {

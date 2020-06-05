@@ -4,8 +4,6 @@
 
 'use strict';
 
-//import {GetDomOxfordPage} from './DomAnalys/analysOxfordlearnersdictionariesPage.js';
-
 chrome.runtime.onInstalled.addListener(function () {
     console.log("Extension are installed.");
 });
@@ -31,10 +29,10 @@ chrome.runtime.onConnect.addListener(port => {
 
             console.log(sender.tab ?
                 "Conected from a content script:" + sender.tab.url :
-                "Conected from the extension");
-            
+                "Conected from the extension.");
+
             if (request.signal === helper.TEXT_INFORMATION) {
-               
+
                 formatDataResponse.formatWordResponse(request.value, request.currentType).then(result => {
                     if (!result) {
                         sendResponse({

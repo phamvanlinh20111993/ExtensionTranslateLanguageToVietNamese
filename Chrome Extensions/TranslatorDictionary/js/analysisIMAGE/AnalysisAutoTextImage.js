@@ -2,11 +2,7 @@ import {
     AbstractAnalysisImage
 } from './AbstractAnalysisImage.js';
 
-import {
-    ENGLISH_TYPE
-} from '../Helper.js';
-
-class AnalysisEnglishTextImage extends AbstractAnalysisImage {
+class AnalysisAutoTextImage extends AbstractAnalysisImage {
 
     #checkTimeOutTranslateText = null;
     #imageUrl;
@@ -23,7 +19,7 @@ class AnalysisEnglishTextImage extends AbstractAnalysisImage {
             this.#checkTimeOutTranslateText = setTimeout(() => {
                 Tesseract.recognize(
                     this.#imageUrl,
-                    ENGLISH_TYPE + 'g', {
+                    {
                         logger: m => console.info(m)
                     }
                 ).then(({
@@ -44,5 +40,5 @@ class AnalysisEnglishTextImage extends AbstractAnalysisImage {
 }
 
 export {
-    AnalysisEnglishTextImage
+    AnalysisAutoTextImage
 }

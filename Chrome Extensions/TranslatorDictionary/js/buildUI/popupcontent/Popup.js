@@ -17,9 +17,7 @@
         analysisDataUI.setData(highlightedText);
         // get data response after analysis
         const response = await analysisDataUI.getDataResponse();
-        //  alert('data'  +  JSON.stringify(response))
         if (!helpers.isNull(response) && !response.err) {
-
             let data
             // string can not be stranslated
             if (typeof response.response === 'string') {
@@ -35,10 +33,9 @@
             } else {
                 data = response.response.data
             }
-            //  alert('data' + JSON.stringify(data) + "----------------------" +  JSON.stringify(response))
             data.content = highlightedText;
             showDomContext.innerHTML = buildPopupUI.showContentUI(data)
-            buildPopupUI.megaphone(data.pro && data.pro.length || 0)
+            buildPopupUI.megaPhone(data.pro && data.pro.length || 0)
         }
     }
 
@@ -100,7 +97,7 @@
     // using in async case
     if (document.readyState !== "loading") {
         addEventListenerInputContentPopup();
-        console.info('DOM content loaded in async.')
+        console.info('DOM content loaded in async case.')
     } else {
         document.addEventListener('DOMContentLoaded', addEventListenerInputContentPopup, false);
     }

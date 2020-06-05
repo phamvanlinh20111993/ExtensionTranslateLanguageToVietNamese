@@ -13,7 +13,7 @@ import {
 
 import {
     CHECK_LANGUAGE,
-    PARAGRAPH_INFORMATION, 
+    PARAGRAPH_INFORMATION,
     TEXT_INFORMATION,
     matchWord
 } from '../Helpers.js';
@@ -32,7 +32,7 @@ function checkLanguageType(data, toTargetLanguage) {
         chrome.runtime.sendMessage({
             signal: CHECK_LANGUAGE,
             value: data,
-            currentType:'none',
+            currentType: 'none',
             targetType: toTargetLanguage
         }, function (response) {
             if (response.error)
@@ -71,7 +71,7 @@ async function analysisDataInstance(targetType, data) {
     console.info('object type in analysisDataInstance - AnalysDataFactory', objectType)
 
     switch (objectType.type) {
-        
+
         case ENGLISH_TYPE:
             instance = new AnalysisEnglishData(targetType, data, objectType.data);
             break;
@@ -84,7 +84,7 @@ async function analysisDataInstance(targetType, data) {
             instance = !objectType ? null : {
                 response: objectType.data,
                 lang: objectType.type,
-                type: matchWord(objectType.data.text || '') ? TEXT_INFORMATION : PARAGRAPH_INFORMATION,
+                type: matchWord(objectType.data.text || '') ? TEXT_INFORMATION : PARAGRAPH_INFORMATION
             };
             break;
     }

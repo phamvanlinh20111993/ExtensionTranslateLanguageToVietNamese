@@ -7,7 +7,7 @@ class AbstractAnalysisImage {
         }
     }
 
-    checkImageText(imageUrl, checkTimeOutTranslateText){
+    getImageText(imageUrl){
         throw new Error('You have to implement checkImageText(imageUrl, checkTimeOutTranslateText) method');
     }
 }

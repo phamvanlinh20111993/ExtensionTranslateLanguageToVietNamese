@@ -26,31 +26,6 @@ class BuildPopupUI extends AbstractBuildContentUI {
         return `<div>${content}</div>`;
     }
 
-    megaphone = totalPro => {
-        let setTime;
-        const getAudio = (e, url) => {
-            try {
-                setTime && clearTimeout(setTime)
-                e.target.style.color = "green"
-                setTime = setTimeout(() => {
-                    new Audio(url).play()
-                    e.target.style.color = "black"
-                }, 300);
-            } catch (e) {
-                throw new Error(`Error: ${e}`);
-            }
-        }
-
-        for (let index = 0; index < totalPro; index++) {
-            if (document.getElementById(`speak-${index}`)) {
-                document.getElementById(`speak-${index}`).addEventListener("click", e => {
-                    let url = document.getElementById(`url-${index}`).value;
-                    url && url.trim() != "" && getAudio(e, url)
-                });
-            }
-        }
-    }
-
     #pronunciationText = obj => {
         let content = ``,
             index = 0,
@@ -83,6 +58,31 @@ class BuildPopupUI extends AbstractBuildContentUI {
                   </p>`;
         }
         return `<div>${content}</div>`
+    }
+
+    megaPhone = totalPro => {
+        let setTime;
+        const getAudio = (e, url) => {
+            try {
+                setTime && clearTimeout(setTime)
+                e.target.style.color = "green"
+                setTime = setTimeout(() => {
+                    new Audio(url).play()
+                    e.target.style.color = "black"
+                }, 300);
+            } catch (e) {
+                throw new Error(`Error: ${e}`);
+            }
+        }
+
+        for (let index = 0; index < totalPro; index++) {
+            if (document.getElementById(`speak-${index}`)) {
+                document.getElementById(`speak-${index}`).addEventListener("click", e => {
+                    let url = document.getElementById(`url-${index}`).value;
+                    url && url.trim() != "" && getAudio(e, url)
+                });
+            }
+        }
     }
 
     // overrided method
