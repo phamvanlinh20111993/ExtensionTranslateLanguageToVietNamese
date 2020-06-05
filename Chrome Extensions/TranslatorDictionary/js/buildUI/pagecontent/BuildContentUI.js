@@ -1,7 +1,8 @@
 import {
     GOOGLE_TRANSLATE_URL,
     FOOTER_NAME,
-    getOffsetDimension
+    getOffsetDimension,
+    WORDTYPELIST
 } from '../Helpers.js';
 
 import {
@@ -84,7 +85,7 @@ class BuildContentUI extends AbstractBuildContentUI {
                         </div>
                      </div>`;
 
-    contentTextP = obj => `<div>
+    #contentTextP = obj => `<div>
                             <div>
                                 <h5 style="font-weight:bold;font-size: 16px;
                                            word-break: break-word;">${obj.highlightedText}</h5>
@@ -95,7 +96,7 @@ class BuildContentUI extends AbstractBuildContentUI {
                             </div>
                         </div>`;
 
-    contentText = obj => {
+    #contentText = obj => {
         let pronound = ``,
             des = ``,
             ind,
@@ -195,7 +196,6 @@ class BuildContentUI extends AbstractBuildContentUI {
         shadow.innerHTML = `${importCss}${content}`;
     }
 
-
     // overrided method
     showContentUI = (obj) => {
 
@@ -280,6 +280,61 @@ class BuildContentUI extends AbstractBuildContentUI {
             e.stopImmediatePropagation();
             // do somthing there    
             playSound(contentFormat.pro[1].url)
+        });
+    }
+
+    showContentUITranslateWord(e, highlightedText, response) {
+        const contentTextArg = response;
+        const contentFormat = {};
+        let typeText = contentTextArg.typeText || '';
+
+        typeText = typeText.split(",")
+        for (let i = 0; i < typeText.length; i++)
+            typeText[i] = WORDTYPELIST[typeText[i].trim().toLowerCase()]
+
+        contentTextArg.typeText = typeText.join(', ')
+        contentTextArg.highlightedText = highlightedText;
+        contentFormat.dom = this.#contentText(contentTextArg);
+        contentFormat.pro = contentTextArg.pro;
+
+        this.showContentUI({
+            e,
+            from: response.lang,
+            contentFormat,
+            highlightedText
+        });
+    }
+
+    showContentUITranslateString(e, highlightedText, response) {
+        const contentFormat = {};
+        const obj = {
+            highlightedText,
+            translateText: response.translateText
+        }
+        contentFormat.dom = this.#contentTextP(obj)
+        this.showContentUI({
+            e,
+            from: response.lang,
+            contentFormat,
+            highlightedText
+        });
+    }
+
+    showContentUITranslateImage(e, highlightedText, response) {
+        const textFromImage = response.textInImage;
+        const contentFormat = {};
+        contentFormat.dom = this.#contentTextP({
+            highlightedText,
+            translateText: response.data.text
+        });
+
+        contentFormat.sound = '';
+        $('#loading-image-content').remove();
+        this.showContentUI({
+            e,
+            from: response.data.detectLanguage.signal,
+            contentFormat,
+            highlightedText
         });
     }
 }

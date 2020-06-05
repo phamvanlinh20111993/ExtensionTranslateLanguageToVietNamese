@@ -2,24 +2,20 @@
     const helperSrc = chrome.extension.getURL('./js/buildUI/Helpers.js');
     const helpers = await import(helperSrc);
     const [IGNORETAGS,
-        WORDTYPELIST,
         PARAGRAPH_INFORMATION,
         TEXT_INFORMATION,
         matchString,
         formatText,
         checkURLImage,
-        removeWindowSelectionText,
         getOffsetDimension,
         preventClickInSideContentRange,
         isNull
     ] = [helpers.IGNORETAGS,
-        helpers.WORDTYPELIST,
         helpers.PARAGRAPH_INFORMATION,
         helpers.TEXT_INFORMATION,
         helpers.matchString,
         helpers.formatText,
         helpers.checkURLImage,
-        helpers.removeWindowSelectionText,
         helpers.getOffsetDimension,
         helpers.preventClickInSideContentRange,
         helpers.isNull
@@ -36,44 +32,8 @@
     const analysisImageTextUrl = chrome.extension.getURL('./js/analysisIMAGE/ImageFactory.js');
     const analysisImageText = await import(analysisImageTextUrl);
 
-    function showContentUITranslateWord(e, highlightedText, response) {
-        const contentTextArg = response;
-        const contentFormat = {};
-        let typeText = contentTextArg.typeText || '';
-
-        typeText = typeText.split(",")
-        for (let i = 0; i < typeText.length; i++)
-            typeText[i] = WORDTYPELIST[typeText[i].trim().toLowerCase()]
-
-        contentTextArg.typeText = typeText.join(', ')
-        contentTextArg.highlightedText = highlightedText;
-        contentFormat.dom = buildContentUIClass.contentText(contentTextArg);
-        contentFormat.pro = contentTextArg.pro;
-
-        buildContentUIClass.showContentUI({
-            e,
-            from: response.lang,
-            contentFormat,
-            highlightedText
-        });
-    }
-
-    function showContentUITranslateString(e, highlightedText, response) {
-        const contentFormat = {};
-        const obj = {
-            highlightedText,
-            translateText: response.translateText
-        }
-        contentFormat.dom = buildContentUIClass.contentTextP(obj)
-        buildContentUIClass.showContentUI({
-            e,
-            from: response.lang,
-            contentFormat,
-            highlightedText
-        });
-    }
-
     let checkTimeOutTranslateText, checkContentTimeout;
+
     checkTextImage = (imageUrl, callback) => {
         // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
         try {
@@ -111,7 +71,6 @@
 
     let timeoutShowPopUp = null;
     $(document).mouseup(async function (e) {
-
         // e.stopPropagation();
         e.preventDefault();
         if (preventClickInSideContentRange("translator-popup-page", e))
@@ -170,11 +129,11 @@
                         translateText: response.response.data.text,
                         lang: response.lang
                     }
-                    showContentUITranslateString(e, highlightedText, data)
+                    buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
                 } else if (response.type == TEXT_INFORMATION) {
                     data = response.response.data;
                     data.lang = response.lang
-                    showContentUITranslateWord(e, highlightedText, data)
+                    buildContentUIClass.showContentUITranslateWord(e, highlightedText, data)
                 }
             }
 
@@ -204,16 +163,14 @@
 
         if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
             checkURLImage($(e.target)[0].src)) {
-
             // modal loading translate image text
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
-
             const imageInstance = analysisImageText.getAnalysisImageInstance('en', $(e.target)[0].src)
-
             // TODO implement new solution
 
             console.info('imageInstance', imageInstance)
             checkTextImage($(e.target)[0].src, (response, error) => {
+
                 console.info('Log checkTextImage response: ', {
                     response,
                     error
@@ -224,28 +181,14 @@
                     $('#loading-image-content').remove();
                     buildContentUIClass.contentLoading(e, 'Image not contains any text.')
                     checkContentTimeout && clearTimeout(checkContentTimeout)
-                    checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2500)
+                    checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2000)
                     return;
                 }
 
                 //check is translate image content
                 //loading content is showing
                 if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
-                    const textFromImage = response.textInImage;
-                    const contentFormat = {};
-                    contentFormat.dom = buildContentUIClass.contentTextP({
-                        highlightedText: textFromImage,
-                        translateText: response.data.text
-                    });
-
-                    contentFormat.sound = '';
-                    $('#loading-image-content').remove();
-                    buildContentUIClass.showContentUI({
-                        e,
-                        from: response.data.detectLanguage.signal,
-                        contentFormat,
-                        highlightedText: textFromImage
-                    });
+                    buildContentUIClass.showContentUITranslateImage(e, response.textInImage, response);
                 }
             });
         }
@@ -265,13 +208,13 @@
             const clickCoordX = e.pageX,
                 clickCoordY = e.pageY;
 
-            (coordSelectedText.bottom - coordSelectedText.top >= 7) &&
-            (coordSelectedText.right - coordSelectedText.left >= 5) &&
-            !(clickCoordX > coordSelectedText.left - 40 &&
-                clickCoordX < coordSelectedText.right + 40 &&
-                clickCoordY > coordSelectedText.top - 40 &&
-                clickCoordY < coordSelectedText.bottom + 40) &&
-            removeWindowSelectionText()
+            // (coordSelectedText.bottom - coordSelectedText.top >= 7) &&
+            // (coordSelectedText.right - coordSelectedText.left >= 5) &&
+            // !(clickCoordX > coordSelectedText.left - 40 &&
+            //     clickCoordX < coordSelectedText.right + 40 &&
+            //     clickCoordY > coordSelectedText.top - 40 &&
+            //     clickCoordY < coordSelectedText.bottom + 40) &&
+            // removeWindowSelectionText()
         }
     })
 
