@@ -32,6 +32,12 @@
     const analysisImageTextUrl = chrome.extension.getURL('./js/analysisIMAGE/ImageFactory.js');
     const analysisImageText = await import(analysisImageTextUrl);
 
+    const analysisAutoImageTextUrl = chrome.extension.getURL('./js/analysisIMAGE/AnalysisAutoTextImage.js');
+    const analysisAutoImageText = await import(analysisAutoImageTextUrl);
+
+    const buildIconTranslateUIUrl = chrome.extension.getURL('./js/buildUI/pagecontent/BuildIconTranslateUI.js');
+    buildIconTranslateUI = await import(buildIconTranslateUIUrl);
+
     let checkTimeOutTranslateText, checkContentTimeout;
 
     checkTextImage = (imageUrl, callback) => {
@@ -76,20 +82,29 @@
         if (preventClickInSideContentRange("translator-popup-page", e))
             return;
 
+        if (preventClickInSideContentRange("loading-icon-translate", e))
+            return;
+
         //match text match is in input tag or textArea tag,... do nothing
         if ($(e.target)[0] && IGNORETAGS.includes($(e.target)[0].tagName)) {
             $('#translator-popup-page').remove();
             return;
         }
 
+        // remove image loading popup loading
         $('#loading-image-content') &&
             $('#loading-image-content').length > 0 &&
             $('#loading-image-content').remove();
 
+        // remove icon translate popup loading
+        $('#loading-icon-translate') &&
+            $('#loading-icon-translate').length > 0 &&
+            $('#loading-icon-translate').remove();
+
         let highlightedText = "";
         (window.getSelection && (highlightedText = window.getSelection().toString())) ||
         (document.selection && document.selection.type != "Control" && (
-            highlightedText = document.selection.createRange().text))
+            highlightedText = document.selection.createRange().text));
 
         let $translatorPopupPage = $('#translator-popup-page');
         // hidden popup when nothing text is choosen or click outside popup
@@ -129,14 +144,23 @@
                         translateText: response.response.data.text,
                         lang: response.lang
                     }
-                    buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
+                    if (response.response.data.text.toLowerCase() !== highlightedText.toLowerCase()) {
+ 
+                     buildIconTranslateUI.showIconTranslate(e, function(sign){
+                        $('#loading-icon-translate').remove();
+                        buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
+                     })
+                    }
                 } else if (response.type == TEXT_INFORMATION) {
                     data = response.response.data;
                     data.lang = response.lang
-                    buildContentUIClass.showContentUITranslateWord(e, highlightedText, data)
+                    
+                    buildIconTranslateUI.showIconTranslate(e, function(sign){
+                        $('#loading-icon-translate').remove();
+                        buildContentUIClass.showContentUITranslateWord(e, highlightedText, data)
+                    })
                 }
             }
-
 
             const browser = chrome || browser;
             browser.runtime.connect().onDisconnect.addListener(function () {
@@ -165,10 +189,17 @@
             checkURLImage($(e.target)[0].src)) {
             // modal loading translate image text
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
-            const imageInstance = analysisImageText.getAnalysisImageInstance('en', $(e.target)[0].src)
+           // const imageInstance = analysisImageText.getAnalysisImageInstance('en', $(e.target)[0].src)
+
+
+            // let abc = new analysisAutoImageText.AnalysisAutoTextImage($(e.target)[0].src)
+            // abc.getImageText((data) => {
+            //     console.log("response", data)
+            // })
+
             // TODO implement new solution
 
-            console.info('imageInstance', imageInstance)
+         //  console.info('imageInstance', imageInstance)
             checkTextImage($(e.target)[0].src, (response, error) => {
 
                 console.info('Log checkTextImage response: ', {

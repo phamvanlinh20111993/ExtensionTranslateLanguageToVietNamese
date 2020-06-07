@@ -177,8 +177,8 @@ class BuildContentUI extends AbstractBuildContentUI {
             zIndex: 10000000
         });
 
-        const shadowDom = '<div id = "popup-modal-loading"></div>';
-        $('#loading-image-content').append(shadowDom)
+        const shadowDOM = '<div id = "popup-modal-loading"></div>';
+        $('#loading-image-content').append(shadowDOM)
         $('#loading-image-content').css({
             left: e.pageX,
             top: e.pageY + 10
@@ -231,8 +231,8 @@ class BuildContentUI extends AbstractBuildContentUI {
             zIndex: 10000000
         });
 
-        const shadowDom = '<div id="popup-modal-transl"></div>';
-        $('#translator-popup-page').append(shadowDom)
+        const shadowDOM = '<div id="popup-modal-transl"></div>';
+        $('#translator-popup-page').append(shadowDOM)
 
         const urlCssContent = chrome.extension.getURL("/css/content-script.css");
         const urlCssBoostrap = chrome.extension.getURL("/assets/css/bootstrap.min.css");
@@ -240,13 +240,14 @@ class BuildContentUI extends AbstractBuildContentUI {
         const shadow = document.querySelector('#popup-modal-transl').attachShadow({
             mode: 'open'
         });
+
         const importCss = `<style>
                             @import "${urlCssContent}";
                             @import "${urlCssBoostrap}";
                         </style>`;
         shadow.innerHTML = `${importCss}${content}`;
         //cal position to show modal
-        setTimeout(() => this.#calPositionShowPopup(e), 100)
+        setTimeout(() => this.#calPositionShowPopup(e), 120)
 
         // click button x on corner right of modal
         shadow.querySelector('.close-trans').addEventListener('click', function (e) {
@@ -321,7 +322,6 @@ class BuildContentUI extends AbstractBuildContentUI {
     }
 
     showContentUITranslateImage(e, highlightedText, response) {
-        const textFromImage = response.textInImage;
         const contentFormat = {};
         contentFormat.dom = this.#contentTextP({
             highlightedText,

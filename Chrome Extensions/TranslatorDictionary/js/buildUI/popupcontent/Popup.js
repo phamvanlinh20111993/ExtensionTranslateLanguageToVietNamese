@@ -18,24 +18,30 @@
         // get data response after analysis
         const response = await analysisDataUI.getDataResponse();
         if (!helpers.isNull(response) && !response.err) {
-            let data
+            let data, textTranslated = null
             // string can not be stranslated
             if (typeof response.response === 'string') {
                 data = {
                     translate: response.response
                 }
+                textTranslated = response.response
                 // string is translated and is paragraph
             } else if (response.type == helpers.PARAGRAPH_INFORMATION) {
                 data = {
                     translate: response.response.data.text
                 }
+                textTranslated = response.response.data.text
                 // string is translated and is text
             } else {
                 data = response.response.data
             }
             data.content = highlightedText;
-            showDomContext.innerHTML = buildPopupUI.showContentUI(data)
-            buildPopupUI.megaPhone(data.pro && data.pro.length || 0)
+            if(textTranslated && textTranslated.toLowerCase() === highlightedText.textTranslated.toLowerCase()){
+
+            }else{
+                showDomContext.innerHTML = buildPopupUI.showContentUI(data)
+                buildPopupUI.megaPhone(data.pro && data.pro.length || 0)
+            }
         }
     }
 

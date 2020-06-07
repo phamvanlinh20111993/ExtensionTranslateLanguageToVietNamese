@@ -41,6 +41,10 @@ const SPACE_CHARACTER = " ";
 //                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
 //                               ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
 
+const UNICODE_CHARARACTERS = /[\p{L}\p{N}]*/gu
+const CAPITAL_LETTERS = ['.', '!', '?', ':']
+const SPACE_WORD_CHARARACTERS = CAPITAL_LETTERS.concat([',', ''])
+
 function matchWord(text) {
     text = text ? text.trim() : false
     return text && text.length > 0 &&
@@ -110,16 +114,16 @@ function isEmpty(data) {
 }
 
 
-function standardizeString(string){
-    if(isNull(string)) return STRING_EMPTY;
+function standardizeString(string) {
+    if (isNull(string)) return STRING_EMPTY;
 
     string = string.trim();
     string = string.split(/\s+/);
     string = string.join(SPACE_CHARACTER)
 
     let res = ""
-    for(const ch of string){
-        
+    for (const ch of string) {
+
     }
 
     return string;

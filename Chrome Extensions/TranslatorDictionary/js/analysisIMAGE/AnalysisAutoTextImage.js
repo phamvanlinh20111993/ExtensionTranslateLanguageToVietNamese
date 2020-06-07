@@ -19,6 +19,7 @@ class AnalysisAutoTextImage extends AbstractAnalysisImage {
             this.#checkTimeOutTranslateText = setTimeout(() => {
                 Tesseract.recognize(
                     this.#imageUrl,
+                    'eng',
                     {
                         logger: m => console.info(m)
                     }
@@ -28,6 +29,7 @@ class AnalysisAutoTextImage extends AbstractAnalysisImage {
                     }
                 }) => {
                     Tesseract.terminate();
+                    console.log('hello', text)
                     callback({
                         textInImage: text
                     })
