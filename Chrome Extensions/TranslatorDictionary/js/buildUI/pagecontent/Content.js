@@ -189,13 +189,12 @@
             checkURLImage($(e.target)[0].src)) {
             // modal loading translate image text
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
-           // const imageInstance = analysisImageText.getAnalysisImageInstance('en', $(e.target)[0].src)
+            const imageInstance = analysisImageText.getAnalysisImageInstance($(e.target)[0].src)
 
-
-            // let abc = new analysisAutoImageText.AnalysisAutoTextImage($(e.target)[0].src)
-            // abc.getImageText((data) => {
-            //     console.log("response", data)
-            // })
+            let abc = new analysisAutoImageText.AnalysisAutoTextImage($(e.target)[0].src)
+            abc.getImageText((data) => {
+                console.log("new implement response", data)
+            })
 
             // TODO implement new solution
 

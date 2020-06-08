@@ -41,7 +41,7 @@ const SPACE_CHARACTER = " ";
 //                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
 //                               ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
 
-const UNICODE_CHARARACTERS = /[\p{L}\p{N}]*/gu
+const UNICODE_CHARARACTERS = /[\p{L}\p{N}]+/gu
 const CAPITAL_LETTERS = ['.', '!', '?', ':']
 const SPACE_WORD_CHARARACTERS = CAPITAL_LETTERS.concat([',', ''])
 
