@@ -21,9 +21,15 @@
   },
   "web_accessible_resources": [
     "/assets/*",
+    "/assets/fonts/*",
     "/css/*",
     "/js/*",
-    "/html/*"
+    "/html/*",
+    "*.ttf",
+    "*.woff2",
+    "*.woff",
+    "*.svg",
+    "*.eot"
   ],
   "content_scripts": [{
     "matches": [
@@ -34,11 +40,12 @@
     "all_frames": true,
     "js": [
       "/assets/js/jquery-3.4.1.min.js",
-      "/assets/js/bootstrap-3.4.1.min.js",
+      "/assets/js/bootstrap.min.js",
       "/assets/js/tesseract.min.js",
       "/js/buildUI/pagecontent/Content.js"
     ],
-    "css": []
+    "css": [
+      "/css/custom_glyphicon.css"]
   }],
   "homepage_url": "https://www.facebook.com/vanlinh2018",
   // "incognito": "not_allowed",
