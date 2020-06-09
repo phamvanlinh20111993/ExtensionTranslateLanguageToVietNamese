@@ -40,8 +40,15 @@
 
     let checkTimeOutTranslateText, checkContentTimeout;
 
+
+    const texInImageUrl = chrome.extension.getURL('./js/api/TextInImage.js');
+    const takeTexInImage = await import(texInImageUrl);
+
     checkTextImage = (imageUrl, callback) => {
         // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
+
+
+        
         try {
             checkTimeOutTranslateText && clearTimeout(checkTimeOutTranslateText)
             checkTimeOutTranslateText = setTimeout(() => {
@@ -122,6 +129,14 @@
         //when hight text
         console.info('Text selected: ', highlightedText)
         if (matchString(highlightedText)) {
+
+            let data = await takeTexInImage.getTextInImageLanguage({data:
+                {imageUrl: 'https://tesseract.projectnaptha.com/img/eng_bw.png',
+                langs: ['eng', 'vie']
+                 }
+                })
+              console.log('get new dâta', data)
+
             // set data to storage
             chrome.storage.sync.set({
                 chooseText: highlightedText
@@ -145,7 +160,6 @@
                         lang: response.lang
                     }
                     if (response.response.data.text.toLowerCase() !== highlightedText.toLowerCase()) {
- 
                      buildIconTranslateUI.showIconTranslate(e, function(sign){
                         $('#loading-icon-translate').remove();
                         buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
@@ -172,7 +186,7 @@
     });
 
 
-    $(document).dblclick(function (e) {
+    $(document).dblclick(async function (e) {
         e.preventDefault();
         e.stopPropagation()
         e.stopImmediatePropagation();
@@ -197,7 +211,6 @@
             })
 
             // TODO implement new solution
-
          //  console.info('imageInstance', imageInstance)
             checkTextImage($(e.target)[0].src, (response, error) => {
 

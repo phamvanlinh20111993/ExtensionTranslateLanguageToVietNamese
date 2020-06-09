@@ -26,7 +26,7 @@ function getDefintionInOxfordPage(requestData) {
             },
             requestType: "GET",
             data: {},
-            formatReponse: {
+            formatResponse: {
                 type: 'Dom',
                 format: 'text/html',
                 elementType: {

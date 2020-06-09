@@ -18,7 +18,7 @@ function getTranslateInLabanPage(requestData) {
             },
             requestType: "GET",
             data: {},
-            formatReponse: {
+            formatResponse: {
                 type: 'Dom',
                 format: 'text/html',
                 elementType: {
@@ -45,7 +45,7 @@ function getTranslateInLabanPage(requestData) {
     anotherFormat: `${request.value}.html`, 
     requestType: "GET",
     data: {},
-    formatReponse: {
+    formatResponse: {
       type: 'Dom',
       format: 'text/html',
       elementType: {
@@ -87,7 +87,7 @@ function getTranslateLacVietPage(request) {
             anotherFormat: `${request.value}.html`,
             requestType: "GET",
             data: {},
-            formatReponse: {
+            formatResponse: {
                 type: 'Dom',
                 format: 'text/html',
                 elementType: {

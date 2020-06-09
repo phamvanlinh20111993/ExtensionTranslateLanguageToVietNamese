@@ -47,9 +47,8 @@ function requestUrl(setting, callback) {
         data: setting.data || {},
         type: setting.requestType,
         success: result => {
-
-            if (setting.formatReponse) {
-                if (setting.formatReponse.type === 'Json') {
+            if (setting.formatResponse) {
+                if (setting.formatResponse.type === 'Json') {
                     if (typeof result === 'Object') {
                         try {
                             callback(JSON.parse(result), null)
@@ -69,7 +68,7 @@ function requestUrl(setting, callback) {
                             error: `Error parse ${typeof result} to Json`
                         })
                     }
-                } else if (setting.formatReponse.type === 'Object') {
+                } else if (setting.formatResponse.type === 'Object') {
                     if (typeof result !== 'Object') {
                         try {
                             callback(JSON.parse(result), null)
@@ -89,19 +88,19 @@ function requestUrl(setting, callback) {
                             error: `Error ${e} when parse to Object`
                         })
                     }
-                } else if (setting.formatReponse.type === 'Dom') {
+                } else if (setting.formatResponse.type === 'Dom') {
                     try {
-                        let doc = new DOMParser().parseFromString(result, setting.formatReponse.format);
+                        let doc = new DOMParser().parseFromString(result, setting.formatResponse.format);
                         console.log('doc', doc, setting.url)
-                        if (setting.formatReponse.elementType) {
-                            if (setting.formatReponse.elementType.type == 'id') {
-                                doc = doc.getElementById(setting.formatReponse.elementType.value + '');
-                            } else if (setting.formatReponse.elementType.type == 'class') {
-                                doc = doc.getElementsByClassName(setting.formatReponse.elementType.value + '');
-                            } else if (setting.formatReponse.elementType.type == 'tag') {
-                                doc = doc.getElementsByTagName(setting.formatReponse.elementType.value + '');
+                        if (setting.formatResponse.elementType) {
+                            if (setting.formatResponse.elementType.type == 'id') {
+                                doc = doc.getElementById(setting.formatResponse.elementType.value + '');
+                            } else if (setting.formatResponse.elementType.type == 'class') {
+                                doc = doc.getElementsByClassName(setting.formatResponse.elementType.value + '');
+                            } else if (setting.formatResponse.elementType.type == 'tag') {
+                                doc = doc.getElementsByTagName(setting.formatResponse.elementType.value + '');
                             } else {
-                                doc = doc.querySelectorAll(setting.formatReponse.elementType.value + '');
+                                doc = doc.querySelectorAll(setting.formatResponse.elementType.value + '');
                             }
                             callback(doc, null)
                         } else {
@@ -112,7 +111,7 @@ function requestUrl(setting, callback) {
                             readyState: 0,
                             status: 0,
                             statusText: '',
-                            error: `Error parse ${typeof result} to Dom: ${setting.formatReponse.format} and ${e}`
+                            error: `Error parse ${typeof result} to Dom: ${setting.formatResponse.format} and ${e}`
                         })
                     }
                 }

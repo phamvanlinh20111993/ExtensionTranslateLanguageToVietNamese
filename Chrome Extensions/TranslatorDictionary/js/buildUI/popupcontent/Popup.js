@@ -35,8 +35,9 @@
             } else {
                 data = response.response.data
             }
+
             data.content = highlightedText;
-            if(textTranslated && textTranslated.toLowerCase() === highlightedText.textTranslated.toLowerCase()){
+            if(textTranslated && textTranslated.toLowerCase() === highlightedText.toLowerCase()){
 
             }else{
                 showDomContext.innerHTML = buildPopupUI.showContentUI(data)
