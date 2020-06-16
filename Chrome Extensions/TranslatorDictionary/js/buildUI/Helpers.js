@@ -1,3 +1,7 @@
+
+
+import { SPACE_CHARACTER, STRING_EMPTY } from "../Helper.js";
+
 const IGNORETAGS = ["INPUT", "TEXTAREA", "BUTTON"];
 
 const WORDTYPELIST = {
@@ -32,11 +36,10 @@ const TRANS_TEXT = "TRANS_TEXT";
 
 const GOOGLE_TRANSLATE_URL = "https://translate.google.com/";
 
+const FORM_POST_SUBMIT_FILE= 'http://localhost:5555/translator-extension/translate/image/file';
+
 const FOOTER_NAME = "© 2020 HanhNguyen - Translator Extension";
 
-const STRING_EMPTY = "";
-
-const SPACE_CHARACTER = " ";
 // const VIETNAMESE_CHARACTERS = `ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯ
 //                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
 //                               ỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ`;
@@ -211,6 +214,7 @@ export {
     TRANS_TEXT,
     GOOGLE_TRANSLATE_URL,
     FOOTER_NAME,
+    FORM_POST_SUBMIT_FILE,
     isNull,
     isStringEmpty,
     isEmpty,

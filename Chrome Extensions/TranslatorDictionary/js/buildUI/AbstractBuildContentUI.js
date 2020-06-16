@@ -9,6 +9,10 @@ class AbstractBuildContentUI {
     showContentUI(obj) {
         throw new Error('You have to implement showContentUI() method');
     }
+
+    showContentUI() {
+        throw new Error('You have to implement showContentUI() method');
+    }
 }
 
 export {

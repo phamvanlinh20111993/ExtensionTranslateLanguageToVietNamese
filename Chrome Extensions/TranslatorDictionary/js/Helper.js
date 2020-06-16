@@ -1,6 +1,12 @@
 const [ENGLISH_TYPE, VIETNAMESE_TYPE] = ['en', 'vi'];
 
+const STRING_EMPTY = "";
+
+const SPACE_CHARACTER = " ";
+
 export{
     ENGLISH_TYPE,
-    VIETNAMESE_TYPE
+    VIETNAMESE_TYPE,
+    STRING_EMPTY,
+    SPACE_CHARACTER
 }

@@ -4,7 +4,9 @@ import {
 
 function connectGoogleAPI(request) {
 
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
+
+   // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/";
     return new Promise(resolve => {
         requestUrl({
             url: API_TRANSLATE_PARAGRAPH_URL,
@@ -28,7 +30,9 @@ function connectGoogleAPI(request) {
 
 function connectGoogleAPICallback(request, callback) {
 
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
+  //  const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/";
+
     requestUrl({
         url: API_TRANSLATE_PARAGRAPH_URL,
         params: [{

@@ -44,8 +44,15 @@ function requestUrl(setting, callback) {
                 xhr.setRequestHeader(key, headers[key]);
             })
         },
+        cache: true,
+        crossDomain : true,
+      //  async: false,
         data: setting.data || {},
         type: setting.requestType,
+        timeout: 600000,
+        complete: result => {
+            console.info('complete data ', result)
+        },
         success: result => {
             if (setting.formatResponse) {
                 if (setting.formatResponse.type === 'Json') {
@@ -130,6 +137,29 @@ function requestUrl(setting, callback) {
     });
 }
 
+function postFileUrl(setting, callback) {
+    $.ajax({
+        url: setting.url,
+        cache: true,
+        crossDomain : true,
+        processData: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+      //  async: false,
+        data: setting.data || {},
+        type: 'post',
+        complete: result => {
+            console.info('complete data ', result)
+        },
+        success: result => {
+            callback(result, null)
+        },
+        error: error => {
+            callback(null, error)
+        }     
+    });
+}
 export {
-    requestUrl
+    requestUrl,
+    postFileUrl
 };

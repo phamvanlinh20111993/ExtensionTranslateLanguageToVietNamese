@@ -60,7 +60,6 @@
     "https://*/*",
     "http://*/*",
     "https://www.oxfordlearnersdictionaries.com/",
-    "https://translatorapilinhpv.herokuapp.com/translate1",
-    "https://localhost:5555/imageText/auto"
+    "https://translatorapilinhpv.herokuapp.com/translate1"
   ]
 }

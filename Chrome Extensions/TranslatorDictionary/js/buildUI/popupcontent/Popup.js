@@ -1,5 +1,8 @@
 (async () => {
 
+    const helperRootUrl = chrome.extension.getURL('./js/Helper.js');
+    const helperRoot = await import(helperRootUrl);
+
     const helperSrc = chrome.extension.getURL('./js/buildUI/Helpers.js');
     const helpers = await import(helperSrc);
     const formatText = helpers.formatText;
@@ -11,6 +14,11 @@
     const buildPopupUIUrl = chrome.extension.getURL('./js/buildUI/popupcontent/BuildPopupUI.js');
     const buildPopupUIInstance = await import(buildPopupUIUrl);
     const buildPopupUI = new buildPopupUIInstance.BuildPopupUI();
+
+    const analysisTextImageURL = chrome.extension.getURL('./js/analysisTextImage/AnalysisTextImage.js')
+    const analysisTextImageInstance  = await import(analysisTextImageURL);
+    const analysisTextImage = new analysisTextImageInstance.AnalysisTextImage();
+
 
     async function showContent(highlightedText) {
         let showDomContext = document.getElementById("showDomContext");
@@ -37,9 +45,9 @@
             }
 
             data.content = highlightedText;
-            if(textTranslated && textTranslated.toLowerCase() === highlightedText.toLowerCase()){
+            if (textTranslated && textTranslated.toLowerCase() === highlightedText.toLowerCase()) {
 
-            }else{
+            } else {
                 showDomContext.innerHTML = buildPopupUI.showContentUI(data)
                 buildPopupUI.megaPhone(data.pro && data.pro.length || 0)
             }
@@ -101,12 +109,122 @@
         }, false);
     }
 
+    addEventListenerUploadImageFile = () => {
+
+        const checkImageFile = function (file) {
+            if (!file.type.startsWith('image/')) {
+                return false;
+            }
+            return true;
+        }
+
+        const calculateImageSize = function({
+            height,
+            width
+        }) {
+            const MAX_WIDTH = 400;
+            const MAX_HEIGHT = 600;
+        
+            height = height == 0 ? 1 : height;
+            width = height == 0 ? 1 : width;
+            
+            const minRatio = Math.min(MAX_HEIGHT/height, MAX_WIDTH/ width)
+        
+            return {
+                height: parseInt(minRatio * height),
+                width: parseInt(minRatio * width)
+            }
+        }
+
+        const buttonSubmit = document.getElementById('submit-image-file');
+        const bodyWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+        const handleFileUpload = function (file) {
+            const divImageRange = document.querySelector('#image-range');
+            divImageRange.style.display = "block";
+
+            const img = document.querySelector('#image-range img');
+         //   img.classList.add("obj");
+            img.file = file;
+
+            const reader = new FileReader();
+            reader.onload = (function (aImg) {
+                return function (e) {
+                    aImg.src = e.target.result;
+                };
+            })(img);
+
+            reader.readAsDataURL(file);
+
+            const submitForm = document.getElementById('submit-image-file');
+            submitForm.style.display = 'block';
+        
+            const inputTyping = document.getElementById('checkValueTyping');
+            inputTyping.disabled = true;
+        }
+
+        let fileUpload = document.getElementById('upload-image-file');
+        fileUpload.addEventListener('change', function (e) {
+            const error = document.getElementById('show-error');
+            error.style.display = 'none';
+            spinnerLoading.style.display = "none";
+
+            if (fileUpload.value !== helperRoot.STRING_EMPTY) {
+
+                if (checkImageFile(fileUpload.files[0])) {
+                    handleFileUpload(fileUpload.files[0]);
+                    const img = document.querySelector('#image-range img');
+                    img.onload = function (aImg) {
+                        const obj = calculateImageSize({width: img.width, height: img.height})
+                        img.width = obj.width
+                        img.height = obj.height
+                    };
+                    setTimeout(() =>  window.scrollTo(0, document.body.scrollHeight), 300)
+                } else {
+                    const divImageRange = document.querySelector('#image-range');
+                    divImageRange.style.display = "none";
+
+                    const submitForm = document.getElementById('submit-image-file');
+                    submitForm.style.display = 'none';
+
+                    const inputTyping = document.getElementById('checkValueTyping');
+                    inputTyping.disabled = false;
+
+                    error.style.display = 'block';
+                    error.innerHTML = '<strong>Error!</strong> File uploaded is not a image.';
+                }
+            }
+        });
+
+        buttonSubmit.addEventListener("click", function(e){
+            const spinnerLoading = document.getElementById('spinner-loading-content');
+            console.log(spinnerLoading)
+            spinnerLoading.style.display = "block";
+            spinnerLoading.style.marginLeft = (bodyWidth/2)+"px";
+            
+            e.preventDefault();
+            // init action submit form
+            const formSubmitFile =  document.getElementById('form-submit-file')
+            formSubmitFile.action = helpers.FORM_POST_SUBMIT_FILE;
+            let fileUpload = document.getElementById('upload-image-file');
+            if (checkImageFile(fileUpload.files[0])) {
+                let formData = new FormData();
+                formData.append('upload-image-file', fileUpload.files[0], fileUpload.files[0].name)
+                analysisTextImage.getTextFromImageFile(formData, function(data){
+                    console.log(data)
+                })
+            }
+        })
+    }
+
     // using in async case
     if (document.readyState !== "loading") {
         addEventListenerInputContentPopup();
+        addEventListenerUploadImageFile();
         console.info('DOM content loaded in async case.')
     } else {
         document.addEventListener('DOMContentLoaded', addEventListenerInputContentPopup, false);
+        document.addEventListener('DOMContentLoaded', addEventListenerUploadImageFile, false);
     }
 
 })();
