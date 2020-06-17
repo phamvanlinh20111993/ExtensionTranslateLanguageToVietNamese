@@ -16,7 +16,7 @@
     const buildPopupUI = new buildPopupUIInstance.BuildPopupUI();
 
     const analysisTextImageURL = chrome.extension.getURL('./js/analysisTextImage/AnalysisTextImage.js')
-    const analysisTextImageInstance  = await import(analysisTextImageURL);
+    const analysisTextImageInstance = await import(analysisTextImageURL);
     const analysisTextImage = new analysisTextImageInstance.AnalysisTextImage();
 
 
@@ -25,14 +25,16 @@
         analysisDataUI.setData(highlightedText);
         // get data response after analysis
         const response = await analysisDataUI.getDataResponse();
+
         if (!helpers.isNull(response) && !response.err) {
             let data, textTranslated = null
             // string can not be stranslated
-            if (typeof response.response === 'string') {
+            if (typeof response === 'string' || typeof response.response === 'string') {
+                let dataResponse = typeof response === 'string' ? response : response.response
                 data = {
-                    translate: response.response
+                    translate: dataResponse
                 }
-                textTranslated = response.response
+                textTranslated = dataResponse
                 // string is translated and is paragraph
             } else if (response.type == helpers.PARAGRAPH_INFORMATION) {
                 data = {
@@ -118,18 +120,18 @@
             return true;
         }
 
-        const calculateImageSize = function({
+        const calculateImageSize = function ({
             height,
             width
         }) {
             const MAX_WIDTH = 400;
             const MAX_HEIGHT = 600;
-        
+
             height = height == 0 ? 1 : height;
             width = height == 0 ? 1 : width;
-            
-            const minRatio = Math.min(MAX_HEIGHT/height, MAX_WIDTH/ width)
-        
+
+            const minRatio = Math.min(MAX_HEIGHT / height, MAX_WIDTH / width)
+
             return {
                 height: parseInt(minRatio * height),
                 width: parseInt(minRatio * width)
@@ -138,13 +140,23 @@
 
         const buttonSubmit = document.getElementById('submit-image-file');
         const bodyWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        const spinnerLoading = document.getElementById('spinner-loading-content');
+        const divImageRange = document.querySelector('#image-range');
+        const error = document.getElementById('show-error');
+        const fileUpload = document.getElementById('upload-image-file');
+        const inputTyping = document.getElementById('checkValueTyping');
 
         const handleFileUpload = function (file) {
-            const divImageRange = document.querySelector('#image-range');
+           
             divImageRange.style.display = "block";
+            divImageRange.innerHTML = '';
 
-            const img = document.querySelector('#image-range img');
-         //   img.classList.add("obj");
+            const img = document.createElement('IMG');
+            img.setAttribute("id", "img");
+            img.setAttribute("class", "img-rounded");
+            img.setAttribute("alt", "Cinque Terre");
+            divImageRange.appendChild(img);  
+            //   img.classList.add("obj");
             img.file = file;
 
             const reader = new FileReader();
@@ -158,14 +170,12 @@
 
             const submitForm = document.getElementById('submit-image-file');
             submitForm.style.display = 'block';
-        
+
             const inputTyping = document.getElementById('checkValueTyping');
             inputTyping.disabled = true;
         }
 
-        let fileUpload = document.getElementById('upload-image-file');
         fileUpload.addEventListener('change', function (e) {
-            const error = document.getElementById('show-error');
             error.style.display = 'none';
             spinnerLoading.style.display = "none";
 
@@ -175,19 +185,20 @@
                     handleFileUpload(fileUpload.files[0]);
                     const img = document.querySelector('#image-range img');
                     img.onload = function (aImg) {
-                        const obj = calculateImageSize({width: img.width, height: img.height})
+                        const obj = calculateImageSize({
+                            width: img.width,
+                            height: img.height
+                        })
                         img.width = obj.width
                         img.height = obj.height
                     };
-                    setTimeout(() =>  window.scrollTo(0, document.body.scrollHeight), 300)
+                    setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 300)
                 } else {
-                    const divImageRange = document.querySelector('#image-range');
                     divImageRange.style.display = "none";
 
                     const submitForm = document.getElementById('submit-image-file');
                     submitForm.style.display = 'none';
 
-                    const inputTyping = document.getElementById('checkValueTyping');
                     inputTyping.disabled = false;
 
                     error.style.display = 'block';
@@ -196,22 +207,28 @@
             }
         });
 
-        buttonSubmit.addEventListener("click", function(e){
-            const spinnerLoading = document.getElementById('spinner-loading-content');
-            console.log(spinnerLoading)
+        buttonSubmit.addEventListener("click", function (e) {
+
+            inputTyping.disabled = false;
+
             spinnerLoading.style.display = "block";
-            spinnerLoading.style.marginLeft = (bodyWidth/2)+"px";
-            
+            spinnerLoading.style.marginLeft = (bodyWidth / 2) + "px";
+            window.scrollTo(0, document.body.scrollHeight);
+
             e.preventDefault();
             // init action submit form
-            const formSubmitFile =  document.getElementById('form-submit-file')
-            formSubmitFile.action = helpers.FORM_POST_SUBMIT_FILE;
-            let fileUpload = document.getElementById('upload-image-file');
             if (checkImageFile(fileUpload.files[0])) {
                 let formData = new FormData();
                 formData.append('upload-image-file', fileUpload.files[0], fileUpload.files[0].name)
-                analysisTextImage.getTextFromImageFile(formData, function(data){
-                    console.log(data)
+
+                analysisTextImage.getTextFromImageFile(formData, function (data) {
+                    const response = data.result;
+                    spinnerLoading.style.display = "none";
+
+                    if (!response.err) {
+                        showContent(helpers.formatText(response.text))
+                        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 300)
+                    };
                 })
             }
         })
