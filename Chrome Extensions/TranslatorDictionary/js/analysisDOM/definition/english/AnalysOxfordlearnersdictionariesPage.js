@@ -3,31 +3,39 @@ import {
     replaceTagHTMLByString,
     getValueOnAttr
 }
-from './lib.js';
+from '../../Helper.js';
 
-class GetDomOxfordPage {
+import {
+    AbstractDefinitionWord
+} from '../AbstractDefinitionWord.js';
+
+class GetDomOxfordPage extends AbstractDefinitionWord {
+    //private properties
+    #dom;
 
     constructor(dom) {
-        this.dom = dom || document.body.appendChild(document.createElement("BODY"))
+        super();
+        this.#dom = dom || document.body.appendChild(document.createElement("BODY"))
     }
 
-    checkWordIsCorrect = () => this.dom.getElementsByClassName("definition-title")[0]
+    checkWordIsCorrect = () => {
+        this.#dom.getElementsByClassName("definition-title")[0]
+    }
 
-    getWord = () => this.dom.getElementsByClassName("headword")[0] &&
-        this.dom.getElementsByClassName("headword")[0].innerHTML
+    getWord = () => this.#dom.getElementsByClassName("headword")[0] &&
+        this.#dom.getElementsByClassName("headword")[0].innerHTML
 
     getTypeWord = () => {
-        let content = this.dom.getElementsByClassName("pos")[0].innerHTML || '';
+        let content = this.#dom.getElementsByClassName("pos")[0].innerHTML || '';
         return replaceTagHTMLByString(content, '');
     }
 
     getPronoundAndSound = () => {
-        let container = this.dom.getElementsByClassName("phonetics")[0],
+        let container = this.#dom.getElementsByClassName("phonetics")[0],
             obj = [],
             url,
             pro;
         if (container) {
-
             let phoneBr = container.getElementsByClassName("phons_br")[0]
             if (phoneBr) {
                 url = phoneBr.getElementsByClassName("sound audio_play_button pron-uk icon-audio")[0]
@@ -57,23 +65,28 @@ class GetDomOxfordPage {
     }
 
     getDescriber = () => {
-        let containerM = this.dom.getElementsByClassName("senses_multiple")[0];
-        let containerS = this.dom.getElementsByClassName("sense_single")[0];
+        let containerM = this.#dom.getElementsByClassName("senses_multiple")[0];
+        let containerS = this.#dom.getElementsByClassName("sense_single")[0];
         let obj = []
-        let desList
+        let desList = []
 
         if (containerM) {
             desList = containerM.getElementsByClassName("def");
-        }
+        }else 
         if (containerS) {
             desList = containerS.getElementsByClassName("def");
         }
 
-        console.log(containerM, containerS)
+        // if (containerM) {
+        //     desList = containerM.getElementsByClassName("def") || [];
+        // }
+        // if (containerS) {
+        //     desList = desList.concat(containerS.getElementsByClassName("def") || []);
+        // }
 
         let ind = 0;
         while (desList && ind < desList.length) {
-            let str = desList[ind++].innerHTML;
+            let str = desList[ind++].innerHTML || "";
             str = replaceTagHTMLByString(str, '');
             str = standardStr(str)
             obj.push(str)
