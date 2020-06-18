@@ -145,6 +145,7 @@
         const error = document.getElementById('show-error');
         const fileUpload = document.getElementById('upload-image-file');
         const inputTyping = document.getElementById('checkValueTyping');
+        const showResponseError = document.getElementById('show-error-response');
 
         const handleFileUpload = function (file) {
            
@@ -178,13 +179,14 @@
         fileUpload.addEventListener('change', function (e) {
             error.style.display = 'none';
             spinnerLoading.style.display = "none";
+            showResponseError.style.display = "none";
 
             if (fileUpload.value !== helperRoot.STRING_EMPTY) {
 
                 if (checkImageFile(fileUpload.files[0])) {
                     handleFileUpload(fileUpload.files[0]);
                     const img = document.querySelector('#image-range img');
-                    img.onload = function (aImg) {
+                    img.onload = function () {
                         const obj = calculateImageSize({
                             width: img.width,
                             height: img.height
@@ -210,7 +212,7 @@
         buttonSubmit.addEventListener("click", function (e) {
 
             inputTyping.disabled = false;
-
+            buttonSubmit.disabled = true;
             spinnerLoading.style.display = "block";
             spinnerLoading.style.marginLeft = (bodyWidth / 2) + "px";
             window.scrollTo(0, document.body.scrollHeight);
@@ -224,11 +226,15 @@
                 analysisTextImage.getTextFromImageFile(formData, function (data) {
                     const response = data.result;
                     spinnerLoading.style.display = "none";
+                    buttonSubmit.disabled = false;
 
-                    if (!response.err) {
+                    if (!data.err) {
                         showContent(helpers.formatText(response.text))
-                        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 300)
-                    };
+                        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100)
+                    }else{
+                        showResponseError.innerHTML = "<strong>Error!</strong> " + (data.err.statusText ? data.err.status + " " + data.err.statusText : data.err);
+                        showResponseError.style.display = "block";
+                    }
                 })
             }
         })

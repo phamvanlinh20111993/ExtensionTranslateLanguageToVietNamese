@@ -4,8 +4,8 @@ import {
 } from './Helper.js';
 
 function getTextInImage(request) {
-    //  const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-    const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
+    //const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
     return new Promise(resolve => {
         requestUrl({
             url: API_TRANSLATE_PARAGRAPH_URL,
@@ -24,8 +24,8 @@ function getTextInImage(request) {
 }
 
 function getTextInImageLanguage(request) {
-    // const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-    const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
+    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
     return new Promise(resolve => {
         requestUrl({
             url: API_TRANSLATE_PARAGRAPH_URL,
@@ -44,8 +44,8 @@ function getTextInImageLanguage(request) {
 }
 
 function getTextInImageCallback(request, callback) {
-    //  const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-    const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
+    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
 
     requestUrl({
         url: API_TRANSLATE_PARAGRAPH_URL,
@@ -64,8 +64,8 @@ function getTextInImageCallback(request, callback) {
 }
 
 function getTextInImageLanguageCallback(request, callback) {
-    // const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-    const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
+    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
 
     requestUrl({
         url: API_TRANSLATE_PARAGRAPH_URL,
@@ -84,8 +84,8 @@ function getTextInImageLanguageCallback(request, callback) {
 }
 
 function getTextInImageFileCallback(request, callback) {
-    //  const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-    const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate/image/file";
+    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate/image/file";
+    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate/image/file";
 
     postFileUrl({
         url: API_TRANSLATE_PARAGRAPH_URL,
