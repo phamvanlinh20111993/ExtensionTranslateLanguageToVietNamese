@@ -45,7 +45,7 @@ function getTextInImageLanguage(request) {
 
 function getTextInImageCallback(request, callback) {
     const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
-    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
+   // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
 
     requestUrl({
         url: API_TRANSLATE_PARAGRAPH_URL,

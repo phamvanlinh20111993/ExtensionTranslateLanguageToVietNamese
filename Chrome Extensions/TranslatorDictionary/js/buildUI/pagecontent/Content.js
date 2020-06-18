@@ -29,20 +29,14 @@
     const analysisDataUIInstance = await import(analysisDataUIUrl);
     const analysisDataUI = new analysisDataUIInstance.AnalysisDataUI();
 
-    const analysisImageTextUrl = chrome.extension.getURL('./js/analysisIMAGE/ImageFactory.js');
-    const analysisImageText = await import(analysisImageTextUrl);
-
-    const analysisAutoImageTextUrl = chrome.extension.getURL('./js/analysisIMAGE/AnalysisAutoTextImage.js');
-    const analysisAutoImageText = await import(analysisAutoImageTextUrl);
+    const analysisImageTextUrl = chrome.extension.getURL('./js/analysisTextIMAGE/AnalysisTextImage.js');
+    const analysisImageTextInstance = await import(analysisImageTextUrl);
+    const analysisImageText = new analysisImageTextInstance.AnalysisTextImage();
 
     const buildIconTranslateUIUrl = chrome.extension.getURL('./js/buildUI/pagecontent/BuildIconTranslateUI.js');
     buildIconTranslateUI = await import(buildIconTranslateUIUrl);
 
     let checkTimeOutTranslateText, checkContentTimeout;
-
-
-    const texInImageUrl = chrome.extension.getURL('./js/api/TextInImage.js');
-    const takeTexInImage = await import(texInImageUrl);
 
     checkTextImage = (imageUrl, callback) => {
         // example: https://www.geeksforgeeks.org/javascript-get-the-text-of-a-span-element/
@@ -126,18 +120,6 @@
         //when hight text
         console.info('Text selected: ', highlightedText)
         if (matchString(highlightedText)) {
-
-            takeTexInImage.getTextInImageCallback(
-                {data:
-                    {
-                        imageUrl: 'https://i.ytimg.com/vi/eC6VmwWEcXw/maxresdefault.jpg',
-                        langs: ['eng', 'vie']
-                    }
-                }, (data) => {
-                    console.log('get new data', data)
-                })
-            
-
             // set data to storage
             chrome.storage.sync.set({
                 chooseText: highlightedText
@@ -149,7 +131,6 @@
             analysisDataUI.setData(highlightedText);
             // get data response after analysis
             const response = await analysisDataUI.getDataResponse();
-            console.log('response', response)
             //  alert('data'  +  JSON.stringify(response))
             if (!isNull(response) && !response.err) {
                 let data
@@ -162,17 +143,16 @@
                         lang: response.lang
                     }
                     if (response.response.data.text.toLowerCase() !== highlightedText.toLowerCase()) {
-                     buildIconTranslateUI.showIconTranslate(e, function(sign){
-                        $('#loading-icon-translate').remove();
-                        buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
-                     })
+                        buildIconTranslateUI.showIconTranslate(e, function (sign) {
+                            $('#loading-icon-translate').remove();
+                            buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
+                        })
                     }
                 } else if (response.type == TEXT_INFORMATION) {
-                    console.log('is data')
                     data = response.response.data;
                     data.lang = response.lang
-                    
-                    buildIconTranslateUI.showIconTranslate(e, function(sign){
+
+                    buildIconTranslateUI.showIconTranslate(e, function (sign) {
                         $('#loading-icon-translate').remove();
                         buildContentUIClass.showContentUITranslateWord(e, highlightedText, data)
                     })
@@ -191,7 +171,7 @@
 
     $(document).dblclick(async function (e) {
         e.preventDefault();
-        e.stopPropagation()
+        e.stopPropagation();
         e.stopImmediatePropagation();
 
         if (preventClickInSideContentRange("translator-popup-page", e))
@@ -206,37 +186,64 @@
             checkURLImage($(e.target)[0].src)) {
             // modal loading translate image text
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
-            const imageInstance = analysisImageText.getAnalysisImageInstance($(e.target)[0].src)
 
-            let abc = new analysisAutoImageText.AnalysisAutoTextImage($(e.target)[0].src)
-            abc.getImageText((data) => {
-                console.log("new implement response", data)
-            })
-
-            // TODO implement new solution
-         //  console.info('imageInstance', imageInstance)
-            checkTextImage($(e.target)[0].src, (response, error) => {
-
-                console.info('Log checkTextImage response: ', {
-                    response,
-                    error
-                })
-
+            analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
                 // response is not existed or error is true then clear popup then do nothing and return
-                if (!response) {
+                const responseResult = data.result;
+                if (data.err) {
                     $('#loading-image-content').remove();
-                    buildContentUIClass.contentLoading(e, 'Image not contains any text.')
-                    checkContentTimeout && clearTimeout(checkContentTimeout)
-                    checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2000)
+                    buildContentUIClass.contentLoading(e, 'Image not contains any text.');
+                    checkContentTimeout && clearTimeout(checkContentTimeout);
+                    checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2000);
                     return;
                 }
 
                 //check is translate image content
                 //loading content is showing
                 if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
-                    buildContentUIClass.showContentUITranslateImage(e, response.textInImage, response);
+                    analysisDataUI.setData(responseResult.text);
+                    // get data response after analysis
+                    let responseUI = {
+                        data: {
+                            text: '',
+                            detectLanguage:{
+                                signal : 'en'
+                            }
+                        }
+                    };
+                    let response = await analysisDataUI.getDataResponse();
+                    if (typeof response === 'string')
+                        responseUI.data.text = response;
+                    else
+                        responseUI = response
+
+                    buildContentUIClass.showContentUITranslateImage(e, responseResult.text, responseUI);
                 }
-            });
+            })
+            // TODO implement new solution
+            //  console.info('imageInstance', imageInstance)
+            /*      checkTextImage($(e.target)[0].src, (response, error) => {
+
+                      console.info('Log checkTextImage response: ', {
+                          response,
+                          error
+                      })
+
+                      // response is not existed or error is true then clear popup then do nothing and return
+                      if (!response) {
+                          $('#loading-image-content').remove();
+                          buildContentUIClass.contentLoading(e, 'Image not contains any text.')
+                          checkContentTimeout && clearTimeout(checkContentTimeout)
+                          checkContentTimeout = setTimeout(() => $('#loading-image-content').remove(), 2000)
+                          return;
+                      }
+
+                      //check is translate image content
+                      //loading content is showing
+                      if ($('#loading-image-content') && $('#loading-image-content').length > 0) {
+                          buildContentUIClass.showContentUITranslateImage(e, response.textInImage, response);
+                      }
+                  }); */
         }
     });
 
@@ -262,6 +269,6 @@
             //     clickCoordY < coordSelectedText.bottom + 40) &&
             // removeWindowSelectionText()
         }
-    })
+    })  
 
 })();
