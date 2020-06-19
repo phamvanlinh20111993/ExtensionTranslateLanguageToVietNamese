@@ -187,9 +187,14 @@
             // modal loading translate image text
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
 
-            analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
+            //   analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
+            analysisImageText.getTextFromImageClient($(e.target)[0].src, async function (data) {
+
+
+                console.log('data', data)
                 // response is not existed or error is true then clear popup then do nothing and return
-                const responseResult = data.result;
+               // const responseResult = data.result;
+               const responseResult = data;
                 if (data.err) {
                     $('#loading-image-content').remove();
                     buildContentUIClass.contentLoading(e, 'Image not contains any text.');
@@ -206,12 +211,13 @@
                     let responseUI = {
                         data: {
                             text: '',
-                            detectLanguage:{
-                                signal : 'en'
+                            detectLanguage: {
+                                signal: 'en'
                             }
                         }
                     };
                     let response = await analysisDataUI.getDataResponse();
+                    console.log('response', response)
                     if (typeof response === 'string')
                         responseUI.data.text = response;
                     else
@@ -269,6 +275,6 @@
             //     clickCoordY < coordSelectedText.bottom + 40) &&
             // removeWindowSelectionText()
         }
-    })  
+    })
 
 })();

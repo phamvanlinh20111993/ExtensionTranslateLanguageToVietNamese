@@ -51,9 +51,6 @@ class AnalysisTextImage {
             this.#checkTimeOutTranslateText && clearTimeout(this.#checkTimeOutTranslateText)
             this.#checkTimeOutTranslateText = setTimeout(() => {
                 Tesseract.recognize(imageUrl)
-                    // .process(function(process){
-                    //     console.info('process', process)
-                    // })
                     .then(({
                         data: {
                             text
@@ -62,8 +59,8 @@ class AnalysisTextImage {
                         //    Tesseract.terminate();
                         console.log('getImageText', text)
                         callback({
-                            textInImage: this.formatText(text)
-                        });
+                            text: this.formatText(text)
+                        }, null);
                     })
             }, 500);
         } catch (e) {
