@@ -1,14 +1,14 @@
 import {
     requestUrl,
-    postFileUrl
+    postFileUrl,
+    API_TRANSLATE_URL,
+    API_GET_TEXT_IMAGE_FILE_URL
 } from './Helper.js';
 
 function getTextInImage(request) {
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
-    //const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
     return new Promise(resolve => {
         requestUrl({
-            url: API_TRANSLATE_PARAGRAPH_URL,
+            url: API_TRANSLATE_URL,
             params: [{
                 value: 'image/auto'
             }],
@@ -24,11 +24,9 @@ function getTextInImage(request) {
 }
 
 function getTextInImageLanguage(request) {
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
-    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
     return new Promise(resolve => {
         requestUrl({
-            url: API_TRANSLATE_PARAGRAPH_URL,
+            url: API_TRANSLATE_URL,
             params: [{
                 value: 'image/language'
             }],
@@ -44,11 +42,8 @@ function getTextInImageLanguage(request) {
 }
 
 function getTextInImageCallback(request, callback) {
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
-   // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
-
     requestUrl({
-        url: API_TRANSLATE_PARAGRAPH_URL,
+        url: API_TRANSLATE_URL,
         params: [{
             value: 'image/auto'
         }],
@@ -64,11 +59,9 @@ function getTextInImageCallback(request, callback) {
 }
 
 function getTextInImageLanguageCallback(request, callback) {
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
-    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate";
 
     requestUrl({
-        url: API_TRANSLATE_PARAGRAPH_URL,
+        url: API_TRANSLATE_URL,
         params: [{
             value: 'image/language'
         }],
@@ -84,11 +77,8 @@ function getTextInImageLanguageCallback(request, callback) {
 }
 
 function getTextInImageFileCallback(request, callback) {
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate/image/file";
-    // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/translate/image/file";
-
     postFileUrl({
-        url: API_TRANSLATE_PARAGRAPH_URL,
+        url: API_GET_TEXT_IMAGE_FILE_URL,
         data: request.data,
     }, (result, err) => {
         callback({

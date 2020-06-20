@@ -168,7 +168,7 @@ class BuildContentUI extends AbstractBuildContentUI {
         $('#loading-image-content').addClass('popup-trans');
         $('#loading-image-content').css({
             position: 'absolute',
-            minWidth: '200px',
+            minWidth: '180px',
             height: '100px',
             background: 'white',
             border: '1px solid rgba(0,0,0,.2)',
@@ -191,8 +191,14 @@ class BuildContentUI extends AbstractBuildContentUI {
         const shadow = document.querySelector('#popup-modal-loading').attachShadow({
             mode: 'open'
         });
-        const content = ` <h3>${textShowUp}</h3>
-                    <i class="fa fa-spinner fa-spin" style="font-size:24px;color:red"></i>`
+        const content = `<div style="width: 100%;
+                                     padding-right: 15px;
+                                     padding-left: 15px;
+                                     margin-right: auto;
+                                     margin-left: auto;"> 
+                           <h3>${textShowUp}</h3>
+                          <i class="fa fa-spinner fa-spin" style="font-size:40px;color:blue;"></i>
+                        </div>`
         shadow.innerHTML = `${importCss}${content}`;
     }
 

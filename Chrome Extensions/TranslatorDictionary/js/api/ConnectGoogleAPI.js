@@ -1,15 +1,12 @@
 import {
-    requestUrl
+    requestUrl,
+    API_TRANSLATOR_URL
 } from './Helper.js';
 
 function connectGoogleAPI(request) {
-
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-
-   // const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/";
     return new Promise(resolve => {
         requestUrl({
-            url: API_TRANSLATE_PARAGRAPH_URL,
+            url: API_TRANSLATOR_URL,
             params: [{
                 value: 'translate1'
             }],
@@ -29,12 +26,8 @@ function connectGoogleAPI(request) {
 }
 
 function connectGoogleAPICallback(request, callback) {
-
-    const API_TRANSLATE_PARAGRAPH_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
-  //  const API_TRANSLATE_PARAGRAPH_URL = "http://localhost:5555/translator-extension/";
-
     requestUrl({
-        url: API_TRANSLATE_PARAGRAPH_URL,
+        url: API_TRANSLATOR_URL,
         params: [{
             value: 'translate1'
         }],

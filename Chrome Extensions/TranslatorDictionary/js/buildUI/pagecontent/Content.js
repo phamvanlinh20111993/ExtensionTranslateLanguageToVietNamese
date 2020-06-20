@@ -174,6 +174,18 @@
         e.stopPropagation();
         e.stopImmediatePropagation();
 
+
+         // remove icon translate popup loading
+         $('#loading-icon-translate') &&
+         $('#loading-icon-translate').length > 0 &&
+         $('#loading-icon-translate').remove();
+
+         // 
+        const $translatorPopupPage = $('#translator-popup-page');
+        if ($translatorPopupPage.length > 0) {
+            $translatorPopupPage.remove();
+        }
+
         if (preventClickInSideContentRange("translator-popup-page", e))
             return;
 
@@ -185,16 +197,14 @@
         if ($(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
             checkURLImage($(e.target)[0].src)) {
             // modal loading translate image text
-            !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Loading text ...');
+            !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Analyzing photos ...');
 
-            //   analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
-            analysisImageText.getTextFromImageClient($(e.target)[0].src, async function (data) {
-
-
+            analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
+            // analysisImageText.getTextFromImageClient($(e.target)[0].src, async function (data) {
                 console.log('data', data)
                 // response is not existed or error is true then clear popup then do nothing and return
-               // const responseResult = data.result;
-               const responseResult = data;
+                const responseResult = data.result;
+            //   const responseResult = data;
                 if (data.err) {
                     $('#loading-image-content').remove();
                     buildContentUIClass.contentLoading(e, 'Image not contains any text.');
@@ -217,11 +227,11 @@
                         }
                     };
                     let response = await analysisDataUI.getDataResponse();
-                    console.log('response', response)
+                    console.log('await analysisDataUI.getDataResponse() response: ', response)
                     if (typeof response === 'string')
                         responseUI.data.text = response;
                     else
-                        responseUI = response
+                        responseUI = response.response
 
                     buildContentUIClass.showContentUITranslateImage(e, responseResult.text, responseUI);
                 }

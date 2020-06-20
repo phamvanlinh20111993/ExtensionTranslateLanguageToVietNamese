@@ -6,7 +6,8 @@ import {
 } from './Helpers.js';
 
 import {
-    STRING_EMPTY
+    STRING_EMPTY,
+    SPACE_CHARACTER
 } from '../Helper.js';
 
 import {
@@ -34,6 +35,9 @@ class AnalysisTextImage {
 
     formatText(text) {
         if (text && text.trim() !== STRING_EMPTY) {
+            //check text is multi paragraph
+            text = text.split(/\n+/).join(SPACE_CHARACTER);
+
             text = ignoreAllPunctuationLetter(text);
             text = ignoreAllOpenCloseCharacter(text);
             text = capitalLetter(text);
@@ -56,8 +60,7 @@ class AnalysisTextImage {
                             text
                         }
                     }) => {
-                        //    Tesseract.terminate();
-                        console.log('getImageText', text)
+                        console.log('Response getTextFromImageClient: ', text)
                         callback({
                             text: this.formatText(text)
                         }, null);
@@ -75,7 +78,10 @@ class AnalysisTextImage {
                 imageUrl
             }
         }, (data) => {
-            callback(data)
+            console.log('Response getTextFromImageAPIgetTextFromImageAPI: ', data)
+            if(data.result)
+                data.result.text = this.formatText(data.result.text);
+            callback(data);
         });
     }
 
@@ -83,7 +89,10 @@ class AnalysisTextImage {
         getTextInImageFileCallback({
             data: file
         }, (data) => {
-            callback(data)
+            console.log('Response getTextFromImageFile: ', data)
+            if(data.result)
+                data.result.text = this.formatText(data.result.text);
+            callback(data);
         });
     }
 }

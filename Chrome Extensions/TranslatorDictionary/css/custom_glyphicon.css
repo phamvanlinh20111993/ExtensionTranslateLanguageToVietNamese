@@ -2,8 +2,18 @@
     font-family: "Glyphicons Halflings";
     src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.eot');
     src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.eot?#iefix') format("embedded-opentype"),
-         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.woff2') format("woff2"),
-         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.woff') format("woff"),
-         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.ttf') format("truetype"),
-         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format("svg");
+        url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.woff2') format("woff2"),
+        url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.woff') format("woff"),
+        url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.ttf') format("truetype"),
+        url('chrome-extension://__MSG_@@extension_id__/assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format("svg");
+}
+
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.eot?v=4.7.0');
+    src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), 
+         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), 
+         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), 
+         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), 
+         url('chrome-extension://__MSG_@@extension_id__/assets/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
 }

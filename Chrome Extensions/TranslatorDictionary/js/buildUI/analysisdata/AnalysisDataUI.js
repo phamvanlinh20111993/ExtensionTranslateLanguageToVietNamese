@@ -53,6 +53,7 @@ class AnalysisDataUI {
     async getDataResponse() {
         if (this.isValidString()) {
             let analysDataFactory = await analysisDataInstance(VIETNAMESE_TYPE, this.#data);
+            
             console.info('instance analysDataFactory in getDataResponse - AnalysisDataUI', analysDataFactory)
             return analysDataFactory.response ? analysDataFactory : analysDataFactory.getDataResponse();
         }

@@ -1,3 +1,11 @@
+//const API_TRANSLATE_URL = "http://localhost:5555/translator-extension/translate";
+//const API_TRANSLATOR_URL = "http://localhost:5555/translator-extension/";
+//const API_GET_TEXT_IMAGE_FILE_URL = "http://localhost:5555/translator-extension/translate/image/file";
+
+const API_TRANSLATE_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate";
+const API_TRANSLATOR_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
+const API_GET_TEXT_IMAGE_FILE_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate/image/file";
+
 function requestUrl(setting, callback) {
 
     if (setting.params) {
@@ -45,8 +53,8 @@ function requestUrl(setting, callback) {
             })
         },
         cache: true,
-        crossDomain : true,
-      //  async: false,
+        crossDomain: true,
+        //  async: false,
         data: setting.data || {},
         type: setting.requestType,
         timeout: 600000,
@@ -141,11 +149,11 @@ function postFileUrl(setting, callback) {
     $.ajax({
         url: setting.url,
         cache: true,
-        crossDomain : true,
+        crossDomain: true,
         processData: false,
         contentType: false,
         enctype: 'multipart/form-data',
-      //  async: false,
+        //  async: false,
         data: setting.data || {},
         type: 'post',
         complete: result => {
@@ -156,10 +164,15 @@ function postFileUrl(setting, callback) {
         },
         error: error => {
             callback(null, error)
-        }     
+        }
     });
 }
+
+
 export {
     requestUrl,
-    postFileUrl
+    postFileUrl,
+    API_TRANSLATE_URL,
+    API_TRANSLATOR_URL,
+    API_GET_TEXT_IMAGE_FILE_URL
 };

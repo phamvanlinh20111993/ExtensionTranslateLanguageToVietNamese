@@ -146,6 +146,7 @@
         const fileUpload = document.getElementById('upload-image-file');
         const inputTyping = document.getElementById('checkValueTyping');
         const showResponseError = document.getElementById('show-error-response');
+        const showDomContext = document.getElementById('showDomContext')
 
         const handleFileUpload = function (file) {
            
@@ -180,6 +181,7 @@
             error.style.display = 'none';
             spinnerLoading.style.display = "none";
             showResponseError.style.display = "none";
+            showDomContext.innerHTML = ''
 
             if (fileUpload.value !== helperRoot.STRING_EMPTY) {
 
@@ -232,7 +234,7 @@
                         showContent(helpers.formatText(response.text))
                         setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100)
                     }else{
-                        showResponseError.innerHTML = "<strong>Error!</strong> " + (data.err.statusText ? data.err.status + " " + data.err.statusText : data.err);
+                        showResponseError.innerHTML = "<strong>Error!</strong> " + (data.err.statusText ? data.err.status + ", " + data.err.statusText : data.err);
                         showResponseError.style.display = "block";
                     }
                 })

@@ -228,5 +228,6 @@ export {
     checkVietNameseChar,
     isValidWord,
     isValidParagraph,
-    matchParagraph
+    matchParagraph,
+    standardizeString
 }
