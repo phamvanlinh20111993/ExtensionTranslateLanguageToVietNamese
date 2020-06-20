@@ -1,10 +1,10 @@
 import {
-    requestUrl
+    requestUrl,
+    OXFORD_DICT_URL
 } from './Helper.js';
 
 function getDefintionInOxfordPage(requestData) {
-    
-    const OXFORD_DICT_URL = "https://www.oxfordlearnersdictionaries.com";
+
     return new Promise(resolve => {
         requestUrl({
             url: OXFORD_DICT_URL,

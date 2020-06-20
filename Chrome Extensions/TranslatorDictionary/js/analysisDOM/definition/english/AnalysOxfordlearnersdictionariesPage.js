@@ -6,10 +6,15 @@ import {
 from '../../Helper.js';
 
 import {
+    OXFORD_DICT_URL
+} from '../../../api/Helper.js';
+
+import {
     AbstractDefinitionWord
 } from '../AbstractDefinitionWord.js';
 
 class GetDomOxfordPage extends AbstractDefinitionWord {
+
     //private properties
     #dom;
 
@@ -20,6 +25,10 @@ class GetDomOxfordPage extends AbstractDefinitionWord {
 
     checkWordIsCorrect = () => {
         this.#dom.getElementsByClassName("definition-title")[0]
+    }
+
+    getReferenceLink = () => {
+        return OXFORD_DICT_URL + "/" + "definition/english/" + this.getWord();
     }
 
     getWord = () => this.#dom.getElementsByClassName("headword")[0] &&
@@ -72,7 +81,7 @@ class GetDomOxfordPage extends AbstractDefinitionWord {
 
         if (containerM) {
             desList = containerM.getElementsByClassName("def");
-        }else 
+        } else
         if (containerS) {
             desList = containerS.getElementsByClassName("def");
         }

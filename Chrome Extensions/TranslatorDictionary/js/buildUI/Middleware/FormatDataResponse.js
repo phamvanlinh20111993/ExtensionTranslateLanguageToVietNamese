@@ -48,7 +48,9 @@ function formatDataResponse(textTranslate, originType, targetType) {
         typeText: null,
         des: [],
         pro: [],
-        trans: []
+        trans: [],
+        referenceLink: "",
+        transReferenceLink: ""
     }
 
     return response;
@@ -62,7 +64,7 @@ async function getTranslateResponse(textTranslate) {
 
     let analysVietNameseDOM;
     if (translate.err) {
-        console.error('error', err)
+        console.error('Error getTranslateResponse(): ', err)
         translate = await getTranslateLacVietPage({
             value: textTranslate
         });
@@ -111,7 +113,7 @@ async function getDefinitionResponse(textTranslate, originType) {
 // auto translate to vietnamese
 async function formatWordResponse(textTranslate, originType) {
     let response = {
-        highlightedText: textTranslate,
+        highlightedText: textTranslate
     }
     //get definition in english this word
     const analysOxfordDOM = await getDefinitionResponse(textTranslate, originType);
@@ -121,12 +123,14 @@ async function formatWordResponse(textTranslate, originType) {
         response.typeText = analysOxfordDOM.getTypeWord();
         response.des = analysOxfordDOM.getDescriber();
         response.pro = analysOxfordDOM.getPronoundAndSound();
+        response.referenceLink = analysOxfordDOM.getReferenceLink();
     } else {
         response.des = [];
     }
 
     if (analysVietNameseDOM) {
         response.trans = analysVietNameseDOM.getTranslateDes();
+        response.transReferenceLink = analysVietNameseDOM.getReferenceLink();
         if (response.trans && typeof response.trans[0] === 'object') {
             response.typeText = !response.typeText ? analysVietNameseDOM.getTranslateDes()[0].type : response.typeText;
         }
@@ -135,7 +139,7 @@ async function formatWordResponse(textTranslate, originType) {
         response = null;
     }
 
-    console.info('response from FormatDataResponse: ', response)
+    console.info('Response from formatDataResponse(): ', response)
 
     return response;
 }

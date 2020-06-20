@@ -6,6 +6,10 @@ const API_TRANSLATE_URL = "https://translatorapilinhpv.herokuapp.com/translator-
 const API_TRANSLATOR_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension";
 const API_GET_TEXT_IMAGE_FILE_URL = "https://translatorapilinhpv.herokuapp.com/translator-extension/translate/image/file";
 
+const OXFORD_DICT_URL = "https://www.oxfordlearnersdictionaries.com";
+const LABAN_URL = "https://dict.laban.vn";
+const LACVIET_URL = "http://tratu.coviet.vn";
+
 function requestUrl(setting, callback) {
 
     if (setting.params) {
@@ -174,5 +178,8 @@ export {
     postFileUrl,
     API_TRANSLATE_URL,
     API_TRANSLATOR_URL,
-    API_GET_TEXT_IMAGE_FILE_URL
+    API_GET_TEXT_IMAGE_FILE_URL,
+    OXFORD_DICT_URL,
+    LABAN_URL,
+    LACVIET_URL
 };

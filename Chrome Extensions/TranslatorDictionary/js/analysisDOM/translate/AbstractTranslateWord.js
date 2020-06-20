@@ -21,6 +21,10 @@ class AbstractTranslateWord extends AbstractWord{
         throw new Error('You have to implement getWord() method ');
     }
 
+    getReferenceLink(){
+        throw new Error('You have to implement getReferenceLink() overrided method ');
+    }
+
     getPronoundAndSound(){
         throw new Error('You have to implement getPronoundAndSound() method ');
     }

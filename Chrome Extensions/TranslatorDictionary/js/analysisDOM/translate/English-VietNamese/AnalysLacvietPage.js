@@ -6,6 +6,10 @@ import {
 } from '../../Helper.js';
 
 import {
+    LACVIET_URL
+} from '../../../api/Helper.js';
+
+import {
     AbstractTranslateWord
 } from '../AbstractTranslateWord.js'
 
@@ -18,7 +22,7 @@ class GetDomLacVietPage extends AbstractTranslateWord {
         this.#word = word;
     }
 
-    checkWordIsCorrect = () => this.#dom.getElementById("divContent")
+    checkWordIsCorrect = () => this.#dom && !this.#dom.querySelector("divContent");
 
     getWord = () => {
         let container = this.#dom.getElementsByClassName("m5t")[0],
@@ -28,6 +32,10 @@ class GetDomLacVietPage extends AbstractTranslateWord {
             word = word && word.innerHTML;
         }
         return word;
+    }
+
+    getReferenceLink(){
+        return LACVIET_URL+"/hoc-tieng-anh/tu-dien/lac-viet/A-V/"+this.getWord()+".html";
     }
 
     getPronoundAndSound = () => {

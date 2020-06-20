@@ -1,9 +1,10 @@
 import {
-    requestUrl
+    requestUrl,
+    LABAN_URL,
+    LACVIET_URL
 } from './Helper.js';
 
 function getTranslateInLabanPage(requestData) {
-    const LABAN_URL = "https://dict.laban.vn";
 
     return new Promise(resolve => {
         requestUrl({
@@ -66,7 +67,6 @@ function getTranslateInLabanPage(requestData) {
   }); */
 
 function getTranslateLacVietPage(request) {
-    const LACVIET_URL = "http://tratu.coviet.vn";
 
     return new Promise(resolve => {
 

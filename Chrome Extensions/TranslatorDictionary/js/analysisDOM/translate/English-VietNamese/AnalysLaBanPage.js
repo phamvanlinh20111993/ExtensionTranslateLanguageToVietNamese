@@ -5,7 +5,7 @@ import {
 
 import {
     LABAN_URL
-} from './Helper.js';
+} from '../../../api/Helper.js';
 
 import {
     AbstractTranslateWord
@@ -36,6 +36,10 @@ class GetDomDictLabanPage extends AbstractTranslateWord {
             word = h2Tag && getOnLyValueInTag(h2Tag) || word;
         }
         return word;
+    }
+
+    getReferenceLink(){
+        return LABAN_URL+"/find?query=" + this.getWord();
     }
 
     getPronoundAndSound = () => {

@@ -141,6 +141,21 @@ a:hover {
     text-decoration: none !important;
 }
 
+.referenceUrl{
+    cursor: pointer;
+    color: black;
+}
+
+.referenceUrl:hover{
+    text-decoration: none !important;
+    color:grey;
+}
+
+.referenceUrl:active {
+    color: red;
+    text-decoration: none !important;
+}
+
 h4 {
     margin: 0 !important;
     padding: 0 !important;

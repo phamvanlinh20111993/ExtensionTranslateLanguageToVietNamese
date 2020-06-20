@@ -88,7 +88,9 @@ class BuildContentUI extends AbstractBuildContentUI {
     #contentTextP = obj => `<div>
                             <div>
                                 <h5 style="font-weight:bold;font-size: 16px;
-                                           word-break: break-word;">${obj.highlightedText}</h5>
+                                           word-break: break-word;">
+                                    ${obj.highlightedText}
+                                </h5>
                             </div>
                             <div>
                                 <p><span class="glyphicon glyphicon-arrow-right"></span>
@@ -129,8 +131,10 @@ class BuildContentUI extends AbstractBuildContentUI {
         for (ind = 0; ind < obj.trans.length || 0; ind++) {
             if (obj.trans[ind].type != '') {
                 des += `<h5 style="font-weight:bold;">
-                        ${obj.trans[ind].type}
-                    </h5>`;
+                           <a class="referenceUrl" href="${obj.transReferenceLink || obj.url}" target="_blank">
+                               ${obj.trans[ind].type}
+                           </a>
+                       </h5>`;
             }
             const meanLengh = obj.trans[ind].mean.length > 3 ? 3 : obj.trans[ind].mean.length;
             for (let pos = 0; pos < meanLengh; pos++) {
@@ -144,7 +148,9 @@ class BuildContentUI extends AbstractBuildContentUI {
         content = `<div>
                     <div>
                         <h4 style="font-weight:bold;"> 
-                            ${obj.highlightedText} (${obj.typeText || 'unk'}) 
+                        <a class="referenceUrl" href="${obj.referenceLink || obj.url}" target="_blank">
+                            ${obj.highlightedText} (${obj.typeText || 'unk'})
+                        </a>
                         </h4>
                         ${pronound}
                     </div>
