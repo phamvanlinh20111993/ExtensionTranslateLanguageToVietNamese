@@ -1,46 +1,53 @@
 {
   "manifest_version": 2,
   "name": "Translator Dictionary",
-  "description": "This extension will translate any language text, image to VietNamese text ",
+  "description": "This extension will translate any language text, image to VietNamese text",
   "version": "1.0",
   "default_locale": "en",
   "background": {
     "scripts": [
-      "background.js",
+      "/js/buildUI/middleware/Background.js",
       "/assets/js/jquery-3.4.1.min.js"
     ],
     "pages": [
-      "background.html"
+      "html/background.html"
     ],
     "persistent": true
   },
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_title": "Translator example",
-    "default_popup": "popup.html"
+    "default_icon": "assets/icon.png",
+    "default_title": "Translator Example",
+    "default_popup": "html/popup.html"
   },
   "web_accessible_resources": [
     "/assets/*",
+    "/assets/fonts/*",
     "/css/*",
-    "/js/DomAnalys/*"
+    "/js/*",
+    "/html/*",
+    "*.ttf",
+    "*.woff2",
+    "*.woff",
+    "*.svg",
+    "*.eot"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*/*",
-        "http://*/*",
-        "https://www.oxfordlearnersdictionaries.com/"
-      ],
-      "all_frames": true,
-      "js": [
-        "/assets/js/jquery-3.4.1.min.js",
-        "/assets/js/bootstrap-3.4.1.min.js",
-        "/assets/js/tesseract.min.js",
-        "/js/content.js"
-      ],
-      "css": []
-    }
-  ],
+  "content_scripts": [{
+    "matches": [
+      "https://*/*",
+      "http://*/*",
+      "https://www.oxfordlearnersdictionaries.com/",
+      "https://localhost:5555/imageText/auto"
+    ],
+    "all_frames": true,
+    "js": [
+      "/assets/js/jquery-3.4.1.min.js",
+      "/assets/js/bootstrap.min.js",
+      "/assets/js/tesseract.min.js",
+      "/js/buildUI/pagecontent/Content.js"
+    ],
+    "css": [
+      "/css/custom_glyphicon.css"]
+  }],
   "homepage_url": "https://www.facebook.com/vanlinh2018",
   // "incognito": "not_allowed",
   "incognito": "split",
@@ -52,7 +59,7 @@
     "cookies",
     "https://*/*",
     "http://*/*",
-    "https://www.oxfordlearnersdictionaries.com/"
-    // "https://translatorapilinhpv.herokuapp.com/translate1"
+    "https://www.oxfordlearnersdictionaries.com/",
+    "https://translatorapilinhpv.herokuapp.com/translate1"
   ]
 }
