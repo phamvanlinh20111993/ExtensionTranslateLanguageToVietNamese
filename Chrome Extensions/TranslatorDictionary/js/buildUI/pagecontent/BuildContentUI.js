@@ -73,7 +73,8 @@ class BuildContentUI extends AbstractBuildContentUI {
                                 <span style="float:right;
                                              font-size:14px !important;
                                              font-style:italic;">
-                                    <a target="_blank" href="${obj.url}">google translate</a>
+                                    <a target="_blank" href="${obj.url}"
+                                    data-toggle="tooltip" title="click go to translate">google translate</a>
                                 </span>
                             </h5>
                         </div>
@@ -131,7 +132,8 @@ class BuildContentUI extends AbstractBuildContentUI {
         for (ind = 0; ind < obj.trans.length || 0; ind++) {
             if (obj.trans[ind].type != '') {
                 des += `<h5 style="font-weight:bold;">
-                           <a class="referenceUrl" href="${obj.transReferenceLink || obj.url}" target="_blank">
+                           <a class="referenceUrl" href="${obj.transReferenceLink || obj.url}" target="_blank"
+                              data-toggle="tooltip" title="click more information">
                                ${obj.trans[ind].type}
                            </a>
                        </h5>`;
@@ -148,7 +150,8 @@ class BuildContentUI extends AbstractBuildContentUI {
         content = `<div>
                     <div>
                         <h4 style="font-weight:bold;"> 
-                        <a class="referenceUrl" href="${obj.referenceLink || obj.url}" target="_blank">
+                        <a class="referenceUrl" href="${obj.referenceLink || obj.url}" target="_blank"
+                        data-toggle="tooltip" title="click more information">
                             ${obj.highlightedText} (${obj.typeText || 'unk'})
                         </a>
                         </h4>
