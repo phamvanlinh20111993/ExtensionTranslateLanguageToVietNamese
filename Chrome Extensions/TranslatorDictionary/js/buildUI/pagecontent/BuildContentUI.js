@@ -11,8 +11,12 @@ import {
 
 class BuildContentUI extends AbstractBuildContentUI {
 
+    #speakerNone
+
     constructor() {
         super();
+        this.#speakerNone = ` <span class="glyphicon glyphicon-volume-off" 
+        style="font-size: 17px; top: 4px;"></span>`;
     }
 
     #calPositionShowPopup = e => {
@@ -67,37 +71,37 @@ class BuildContentUI extends AbstractBuildContentUI {
     }
 
     #modalTrans = obj => `<div class="modal-content-trans">
-                        <div class="modal-header-trans">
-                            <button type="button" class="close-trans" data-dismiss="modal">&times;</button>
-                            <h5 class="modal-title">Translate ${obj.title} 
-                                <span style="float:right;
-                                             font-size:14px !important;
-                                             font-style:italic;">
-                                    <a target="_blank" href="${obj.url}"
-                                    data-toggle="tooltip" title="click go to translate">google translate</a>
-                                </span>
-                            </h5>
-                        </div>
-                        <div class="modal-body-trans">
-                            ${obj.contentFormat}
-                        </div>
-                        <div class="modal-footer-trans">
-                            <span>${FOOTER_NAME}</span>
-                        </div>
-                     </div>`;
-
-    #contentTextP = obj => `<div>
-                            <div>
-                                <h5 style="font-weight:bold;font-size: 16px;
-                                           word-break: break-word;">
-                                    ${obj.highlightedText}
+                            <div class="modal-header-trans">
+                                <button type="button" class="close-trans" data-dismiss="modal">&times;</button>
+                                <h5 class="modal-title">Translate ${obj.title} 
+                                    <span style="float:right;
+                                                font-size:14px !important;
+                                                font-style:italic;">
+                                        <a target="_blank" href="${obj.url}"
+                                        data-toggle="tooltip" title="click go to translate">google translate</a>
+                                    </span>
                                 </h5>
                             </div>
-                            <div>
-                                <p><span class="glyphicon glyphicon-arrow-right"></span>
-                                    &nbsp;${obj.translateText}</p>
+                            <div class="modal-body-trans">
+                                ${obj.contentFormat}
+                            </div>
+                            <div class="modal-footer-trans">
+                                <span>${FOOTER_NAME}</span>
                             </div>
                         </div>`;
+
+    #contentTextP = obj => `<div>
+                                <div>
+                                    <h5 style="font-weight:bold;font-size: 16px;
+                                            word-break: break-word;">
+                                        ${obj.highlightedText}
+                                    </h5>
+                                </div>
+                                <div>
+                                    <p><span class="glyphicon glyphicon-arrow-right"></span>
+                                        &nbsp;${obj.translateText}</p>
+                                </div>
+                            </div>`;
 
     #contentText = obj => {
         let pronound = ``,
@@ -105,33 +109,44 @@ class BuildContentUI extends AbstractBuildContentUI {
             ind,
             content,
             trans = ``,
-            speakerNone = ` <span class="glyphicon glyphicon-volume-off" 
-                              style="font-size: 17px; top: 4px;"></span>`;
-
-        const speaker = ind => `<span class="glyphicon glyphicon-bullhorn" 
-                            style="top: 3px;" id="pro_${ind}"></span>`
+            relatedWords = obj.relateWords && obj.relateWords.length > 0 ? `related: ` : ``;
 
         for (ind = 0; ind < obj.pro.length || 0; ind++) {
             if (obj.pro[ind].type != '' && obj.pro[ind].pro != '') {
                 let url = obj.pro[ind].url
-                pronound += `<p style='font-size: 13px;'>
+                pronound += `<p style="font-size: 13px;">
                             &nbsp;
-                            ${url && url.trim() != "" ? speaker(ind) : speakerNone}
+                            ${url && url.trim() != "" ? this.#speaker(ind) : this.#speakerNone}
                             <i style="font-size:11px;"> (${obj.pro[ind].type})</i> 
                             ${obj.pro[ind].pro}
                         </p>`;
             }
         }
+
+        if (relatedWords.length > 0) {
+            //href="${obj.relateWords[pos][1]}" 
+            for (let pos = 0; pos < obj.relateWords.length; pos++) {
+                relatedWords += `<a class="referenceUrl" target="_blank" id="relate_${pos}" 
+                    data-toggle="tooltip"  title="click more information" style="color: blue;">
+                    ${obj.relateWords[pos][0].trim()}(${WORDTYPELIST[obj.relateWords[pos][2].trim().toLowerCase()]})
+                </a>,`
+            }
+            relatedWords = relatedWords.substring(0, relatedWords.length - 1)
+        }
+
+        //format define description
         const desLength = obj.des.length > 3 ? 3 : obj.des.length;
         for (ind = 0; ind < desLength; ind++) {
             des += `<p style="font-size: 15px;">&nbsp;
-                    <span class="glyphicon glyphicon-chevron-right"></span>
-                    ${obj.des[ind]}
-                </p>`;
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        ${obj.des[ind]}
+                    </p>`;
         }
+
+        //format translate
         for (ind = 0; ind < obj.trans.length || 0; ind++) {
             if (obj.trans[ind].type != '') {
-                des += `<h5 style="font-weight:bold;">
+                trans += `<h5 style="font-weight:bold;">
                            <a class="referenceUrl" href="${obj.transReferenceLink || obj.url}" target="_blank"
                               data-toggle="tooltip" title="click more information">
                                ${obj.trans[ind].type}
@@ -140,34 +155,39 @@ class BuildContentUI extends AbstractBuildContentUI {
             }
             const meanLengh = obj.trans[ind].mean.length > 3 ? 3 : obj.trans[ind].mean.length;
             for (let pos = 0; pos < meanLengh; pos++) {
-                des += `<p style="font-size: 15px;">&nbsp;
-                        <span class="glyphicon glyphicon-hand-right"></span>
-                        ${obj.trans[ind].mean[pos]}
-                    </p>`
+                trans += `<p style="font-size:15px;">
+                            &nbsp;<span class="glyphicon glyphicon-hand-right"></span>
+                            ${obj.trans[ind].mean[pos]}
+                        </p>`
             }
         }
 
-        content = `<div>
+        return `<div id="definition_word">
                     <div>
                         <h4 style="font-weight:bold;"> 
-                        <a class="referenceUrl" href="${obj.referenceLink || obj.url}" target="_blank"
-                        data-toggle="tooltip" title="click more information">
-                            ${obj.highlightedText} (${obj.typeText || 'unk'})
-                        </a>
+                            <a class="referenceUrl" href="${obj.referenceLink || obj.url}" target="_blank"
+                                data-toggle="tooltip" title="click more information">
+                                 ${obj.highlightedText} (${obj.typeText || 'unk'})
+                            </a>
                         </h4>
                         ${pronound}
                     </div>
-                         <div style="line-height: normal;">
-                           ${des}
-                        </div>
+                    <div style="line-height:normal;">
+                        ${des}
+                    </div>
                 </div>
-                <div>
-                    <div style="color:green;">
+
+                <div id="translate_word">
+                    <div style="line-height:normal;">
                         ${trans}
                     </div>
-                </div>`;
+                </div>
 
-        return content;
+                <div>
+                    <div style="color:black !important;" id="relate_word">
+                        ${relatedWords}
+                    </div>
+                </div>`;
     }
 
     contentLoading = (e, textShowUp) => {
@@ -271,32 +291,7 @@ class BuildContentUI extends AbstractBuildContentUI {
             $('#translator-popup-page').remove();
         });
 
-        let setTime;
-        const playSound = url => {
-            try {
-                setTime && clearTimeout(setTime)
-                setTime = setTimeout(new Audio(url).play(), 300);
-            } catch (e) {
-                throw new Error(`Error: ${e}`);
-            }
-        }
-
-        // click buhorn span
-        const listenEvent = shadow.querySelector('#pro_0');
-        listenEvent && listenEvent.addEventListener('click', function (e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            // do somthing there
-            playSound(contentFormat.pro[0].url)
-        });
-        // click buhorn span
-        const listenEventN = shadow.querySelector('#pro_1');
-        listenEventN && listenEventN.addEventListener('click', function (e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            // do somthing there    
-            playSound(contentFormat.pro[1].url)
-        });
+        this.#takeSoundEvent(contentFormat, 2)
     }
 
     showContentUITranslateWord(e, highlightedText, response) {
@@ -305,13 +300,15 @@ class BuildContentUI extends AbstractBuildContentUI {
         let typeText = contentTextArg.typeText || '';
 
         typeText = typeText.split(",")
-        for (let i = 0; i < typeText.length; i++)
+        for (let i = 0; i < typeText.length; i++) {
             typeText[i] = WORDTYPELIST[typeText[i].trim().toLowerCase()]
+        }
 
         contentTextArg.typeText = typeText.join(', ')
         contentTextArg.highlightedText = highlightedText;
         contentFormat.dom = this.#contentText(contentTextArg);
         contentFormat.pro = contentTextArg.pro;
+        contentFormat.relateWords = contentTextArg.relateWords;
 
         this.showContentUI({
             e,
@@ -351,6 +348,81 @@ class BuildContentUI extends AbstractBuildContentUI {
             contentFormat,
             highlightedText
         });
+    }
+
+    #speaker = ind => `<span class="glyphicon glyphicon-bullhorn" 
+            style="top: 3px;" id="pro_${ind}"></span>`
+
+    updateContentUI = (desArr) => {
+        const contentDOM = document.querySelector('#popup-modal-transl');
+        let contentDOMContentUI = contentDOM.shadowRoot.querySelector('#definition_word').innerHTML;
+    
+        desArr && desArr.length > 0 && desArr.map(des => {
+            let pronound = ``
+            for (let ind = 0; ind < des.pro.length || 0; ind++) {
+                if (des.pro[ind].type != '' && des.pro[ind].pro != '') {
+                    let url = des.pro[ind].url
+                    pronound += `<p style='font-size: 13px;'>
+                                    &nbsp;
+                                    ${url && url.trim() != "" ? this.#speaker(ind + 2) : this.#speakerNone}
+                                    <i style="font-size:11px;"> (${des.pro[ind].type})</i> 
+                                    ${des.pro[ind].pro}
+                                </p>`;
+                }
+            }
+
+            let description = ``
+            for (let ind = 0; ind < des.des.length; ind++) {
+                description += `<p style="font-size: 15px;">&nbsp;
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                ${des.des[ind]}
+                            </p>`;
+            }
+            contentDOMContentUI +=
+                `<div>
+                        <h4 style="font-weight:bold;"> 
+                            <a class="referenceUrl" href="${des.referenceLink || des.url}" target="_blank"
+                            data-toggle="tooltip" title="click more information">
+                                ${des.highlightedText} (${WORDTYPELIST[des.typeText.trim().toLowerCase()] || 'unk'})
+                            </a>
+                        </h4>
+                        ${pronound}
+                    </div>
+                    <div style="line-height: normal;">
+                        ${description}
+                    </div>`
+        })
+        contentDOM.shadowRoot.querySelector('#definition_word').innerHTML = contentDOMContentUI
+        contentDOM.shadowRoot.querySelector('#relate_word').innerHTML = ""
+        // add click burn horn
+        desArr && desArr.length > 0 && desArr.map((des, pos) => {
+            this.#takeSoundEvent(des, pos + 4)
+        })
+    }
+
+    #takeSoundEvent(contentFormat, to) {
+        const shadow = document.querySelector('#popup-modal-transl')
+        let setTime;
+        const playSound = url => {
+            try {
+                setTime && clearTimeout(setTime)
+                setTime = setTimeout(new Audio(url).play(), 300);
+            } catch (e) {
+                throw new Error(`Error: ${e}`);
+            }
+        }
+
+        // click buhorn span
+        let pos = 0;
+        for (let ind = 0; ind < to; ind++) {
+            const listenEvent = shadow.shadowRoot.querySelector('#pro_' + ind);
+            listenEvent && listenEvent.addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                // do somthing there
+                playSound(contentFormat.pro[(pos++)%2].url)
+            });
+        }
     }
 }
 

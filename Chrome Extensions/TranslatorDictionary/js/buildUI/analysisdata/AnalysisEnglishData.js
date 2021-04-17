@@ -58,7 +58,6 @@ class AnalysisEnglishData extends AbstractAnalysisData {
         }
 
         return new Promise(resolve => resolve(this.#dataResponse));
-
     }
 }
 

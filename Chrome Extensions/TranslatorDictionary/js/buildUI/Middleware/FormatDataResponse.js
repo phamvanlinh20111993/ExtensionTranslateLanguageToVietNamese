@@ -17,7 +17,8 @@ import {
 } from '../../Helper.js';
 
 import {
-    getDefintionInOxfordPage
+    getDefintionInOxfordPage,
+    getDefintionInOxfordPageByUrl
 } from '../../api/DefinitionEnglish.js';
 
 import {
@@ -110,6 +111,34 @@ async function getDefinitionResponse(textTranslate, originType) {
     return analysOxfordDOM;
 }
 
+async function getDefinitionUrlResponse(url) {
+    let definition = await getDefintionInOxfordPageByUrl(url)
+    let analysOxfordDOM = new GetDomOxfordPage(definition.result);
+    // analysOxfordDOM.checkWordIsCorrect() mean that that word is not has defintition
+    if (analysOxfordDOM && analysOxfordDOM.checkWordIsCorrect()) {
+        analysOxfordDOM = null;
+    }
+    return analysOxfordDOM;
+}
+
+async function formatWordResponseWithOutTranslate(url){
+    let response = {}
+    //get definition in english this word
+    const analysOxfordDOM = await getDefinitionUrlResponse(url);
+    if (analysOxfordDOM) {
+        response.typeText = analysOxfordDOM.getTypeWord();
+        response.des = analysOxfordDOM.getDescriber();
+        response.pro = analysOxfordDOM.getPronoundAndSound();
+        response.referenceLink = analysOxfordDOM.getReferenceLink();
+        response.relateWords = analysOxfordDOM.getRelateWords();
+        response.nearlyWords = analysOxfordDOM.getNearByWords();
+    } else {
+        response.des = [];
+    }
+
+    return response
+}
+
 // auto translate to vietnamese
 async function formatWordResponse(textTranslate, originType) {
     let response = {
@@ -124,6 +153,8 @@ async function formatWordResponse(textTranslate, originType) {
         response.des = analysOxfordDOM.getDescriber();
         response.pro = analysOxfordDOM.getPronoundAndSound();
         response.referenceLink = analysOxfordDOM.getReferenceLink();
+        response.relateWords = analysOxfordDOM.getRelateWords();
+        response.nearlyWords = analysOxfordDOM.getNearByWords();
     } else {
         response.des = [];
     }
@@ -140,7 +171,6 @@ async function formatWordResponse(textTranslate, originType) {
     }
 
     console.info('Response from formatDataResponse(): ', response)
-
     return response;
 }
 
@@ -153,5 +183,6 @@ async function formatTextResponse(textTranslate, originType) {
 
 export {
     formatWordResponse,
-    formatTextResponse
+    formatTextResponse,
+    formatWordResponseWithOutTranslate
 }

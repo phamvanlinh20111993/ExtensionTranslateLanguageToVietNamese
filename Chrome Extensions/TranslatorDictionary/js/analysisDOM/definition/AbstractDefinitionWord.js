@@ -38,6 +38,14 @@ class AbstractDefinitionWord extends AbstractWord {
     getDescriber() {
         throw new Error('You have to implement getDescriber() method');
     }
+
+    getRelateWords(){
+        throw new Error('You have to implement getRelateWord() method');
+    }
+
+    getNearByWords(){
+        throw new Error('You have to implement getNearByWord() method');
+    }
 }
 
 export {

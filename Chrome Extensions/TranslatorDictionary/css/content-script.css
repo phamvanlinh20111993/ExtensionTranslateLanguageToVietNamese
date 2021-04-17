@@ -170,10 +170,6 @@ p {
     cursor: pointer;
 }
 
-#pro_1 {
-    cursor: pointer;
-}
-
 #pro_0:hover {
     color: blue;
 }
@@ -182,12 +178,105 @@ p {
     color: green;
 }
 
+#pro_1 {
+    cursor: pointer;
+}
+
 #pro_1:hover {
     color: blue;
 }
 
 #pro_1:active {
     color: green !important;
-    ;
 }
+
+#pro_2 {
+    cursor: pointer;
+}
+
+#pro_2:hover {
+    color: blue;
+}
+
+#pro_2:active {
+    color: green !important;
+}
+
+#pro_3 {
+    cursor: pointer;
+}
+
+#pro_3:hover {
+    color: blue;
+}
+
+#pro_3:active {
+    color: green !important;
+}
+
+#pro_4 {
+    cursor: pointer;
+}
+
+#pro_4:hover {
+    color: blue;
+}
+
+#pro_4:active {
+    color: green !important;
+}
+
+#pro_5 {
+    cursor: pointer;
+}
+
+#pro_5:hover {
+    color: blue;
+}
+
+#pro_5:active {
+    color: green !important;
+}
+
+#pro_6 {
+    cursor: pointer;
+}
+
+#pro_6:hover {
+    color: blue;
+}
+
+#pro_6:active {
+    color: green !important;
+}
+
+#pro_7 {
+    cursor: pointer;
+}
+
+#pro_7:hover {
+    color: blue;
+}
+
+#pro_7:active {
+    color: green !important;
+}
+
+#pro_ {
+    cursor: pointer;
+}
+
+#pro_8:hover {
+    color: blue;
+}
+
+#pro_8:active {
+    color: green !important;
+}
+
+
+
+
+
+
 

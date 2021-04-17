@@ -70,6 +70,19 @@ chrome.runtime.onConnect.addListener(port => {
                 return true; // Inform Chrome that we will make a delayed sendResponse
             }
 
+            if (request.signal === helper.URL_TEXT) {
+                formatDataResponse.formatWordResponseWithOutTranslate(request.value).then(result => {
+                    console.info('result in getDefinitionUrlResponse', result)
+                    sendResponse({
+                        data: result,
+                        err: false
+                    })
+                })
+
+                return true; // Inform Chrome that we will make a delayed sendResponse
+            }
+
+
             return true; // Inform Chrome that we will make a delayed sendResponse
         });
 })();
