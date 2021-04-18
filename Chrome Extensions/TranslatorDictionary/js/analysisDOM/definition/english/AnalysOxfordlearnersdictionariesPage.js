@@ -30,18 +30,23 @@ class GetDomOxfordPage extends AbstractDefinitionWord {
     }
 
     checkWordIsCorrect = () => {
-        this.#domEntryDefinitionRange.getElementsByClassName("definition-title")[0]
+        return this.#domEntryDefinitionRange.getElementsByClassName("definition-title")[0]
     }
 
     getReferenceLink = () => {
-        return OXFORD_DICT_URL + "/" + "definition/english/" + this.getWord();
+        return GetDomOxfordPage.getDefaultPageLink() + this.getWord();
+    }
+
+    static getDefaultPageLink(){
+        return OXFORD_DICT_URL + "/" + "definition/english/";
     }
 
     getWord = () => this.#domEntryDefinitionRange.getElementsByClassName("headword")[0] &&
                 this.#domEntryDefinitionRange.getElementsByClassName("headword")[0].innerHTML
 
     getTypeWord = () => {
-        let content =this.#domEntryDefinitionRange.getElementsByClassName("pos")[0].innerHTML || '';
+        let content = (this.#domEntryDefinitionRange.getElementsByClassName("pos")[0] 
+           && this.#domEntryDefinitionRange.getElementsByClassName("pos")[0].innerHTML) || '';
         return replaceTagHTMLByString(content, '');
     }
 

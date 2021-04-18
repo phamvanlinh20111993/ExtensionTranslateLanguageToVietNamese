@@ -19,6 +19,24 @@
     const analysisTextImageInstance = await import(analysisTextImageURL);
     const analysisTextImage = new analysisTextImageInstance.AnalysisTextImage();
 
+    async function getRelateWords(relateWords){
+        let dataResponses = []
+        for (let pos = 0; pos < relateWords.length; pos++) {
+            analysisDataUI.setData(relateWords[pos][1]);
+            const responseData = await analysisDataUI.getDataResponseByUrl();
+            let dataResponse = {}
+            dataResponse.des = responseData.data.des
+            dataResponse.relateWords = responseData.data.relateWords
+            dataResponse.pro = responseData.data.pro
+            dataResponse.referenceLink = relateWords[pos][1]
+            dataResponse.typeText = relateWords[pos][2]
+            dataResponse.highlightedText = relateWords[pos][0].trim()
+            dataResponses.push(dataResponse)
+        }
+
+        return dataResponses;
+    }
+
 
     async function showContent(highlightedText) {
         let showDomContext = document.getElementById("showDomContext");
@@ -48,9 +66,17 @@
 
             data.content = highlightedText;
             if (textTranslated && textTranslated.toLowerCase() === highlightedText.toLowerCase()) {
-
+                // Do nothing
             } else {
+                let defineRelateWords
+                if(data.relateWords && data.relateWords.length > 0){
+                    defineRelateWords = await getRelateWords(data.relateWords)
+                }
                 showDomContext.innerHTML = buildPopupUI.showContentUI(data)
+                let currentContent = document.getElementById('definition_text').innerHTML 
+                document.getElementById('definition_text').innerHTML = currentContent
+                + buildPopupUI.updateContentUI(defineRelateWords)
+
                 buildPopupUI.megaPhone(data.pro && data.pro.length || 0)
             }
         }
@@ -212,7 +238,6 @@
         });
 
         buttonSubmit.addEventListener("click", function (e) {
-
             inputTyping.disabled = false;
             buttonSubmit.disabled = true;
             spinnerLoading.style.display = "block";
@@ -242,6 +267,7 @@
         })
     }
 
+    // Root for loading when click icon on top right bar of chrome browser
     // using in async case
     if (document.readyState !== "loading") {
         addEventListenerInputContentPopup();

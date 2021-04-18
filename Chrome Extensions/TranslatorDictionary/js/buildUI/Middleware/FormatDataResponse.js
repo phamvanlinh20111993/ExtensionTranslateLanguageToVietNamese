@@ -157,6 +157,7 @@ async function formatWordResponse(textTranslate, originType) {
         response.nearlyWords = analysOxfordDOM.getNearByWords();
     } else {
         response.des = [];
+        response.referenceLink = GetDomOxfordPage.getDefaultPageLink() + textTranslate
     }
 
     if (analysVietNameseDOM) {
@@ -165,7 +166,9 @@ async function formatWordResponse(textTranslate, originType) {
         if (response.trans && typeof response.trans[0] === 'object') {
             response.typeText = !response.typeText ? analysVietNameseDOM.getTranslateDes()[0].type : response.typeText;
         }
-        response.pro = await analysVietNameseDOM.getPronoundAndSound();
+        if(!response.pro){
+            response.pro = await analysVietNameseDOM.getPronoundAndSound();
+        }
     } else {
         response = null;
     }

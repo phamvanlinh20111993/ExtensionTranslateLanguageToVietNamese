@@ -19,6 +19,10 @@ class AbstractDefinitionWord extends AbstractWord {
         throw new Error('You have to implement getReferenceLink() overrided method ');
     }
 
+    static getDefaultPageLink(){
+        throw new Error('You have to implement getReferenceLink() overrided method ');
+    }
+
     getWord() {
         throw new Error('You have to implement getWord() method ');
     }

@@ -291,7 +291,7 @@ class BuildContentUI extends AbstractBuildContentUI {
             $('#translator-popup-page').remove();
         });
 
-        this.#takeSoundEvent(contentFormat, 2)
+        this.#takeSoundEvent([contentFormat], 0, 1)
     }
 
     showContentUITranslateWord(e, highlightedText, response) {
@@ -353,18 +353,20 @@ class BuildContentUI extends AbstractBuildContentUI {
     #speaker = ind => `<span class="glyphicon glyphicon-bullhorn" 
             style="top: 3px;" id="pro_${ind}"></span>`
 
-    updateContentUI = (desArr) => {
+    updateContentUI = descriptionArr => {
         const contentDOM = document.querySelector('#popup-modal-transl');
         let contentDOMContentUI = contentDOM.shadowRoot.querySelector('#definition_word').innerHTML;
-    
-        desArr && desArr.length > 0 && desArr.map(des => {
+        let originPro = descriptionArr.pop()
+        let desArr = descriptionArr
+
+        desArr && desArr.length > 0 && desArr.map((des, postition) => {
             let pronound = ``
             for (let ind = 0; ind < des.pro.length || 0; ind++) {
                 if (des.pro[ind].type != '' && des.pro[ind].pro != '') {
                     let url = des.pro[ind].url
                     pronound += `<p style='font-size: 13px;'>
                                     &nbsp;
-                                    ${url && url.trim() != "" ? this.#speaker(ind + 2) : this.#speakerNone}
+                                    ${url && url.trim() != "" ? this.#speaker(2 * postition + ind + 2) : this.#speakerNone}
                                     <i style="font-size:11px;"> (${des.pro[ind].type})</i> 
                                     ${des.pro[ind].pro}
                                 </p>`;
@@ -395,12 +397,13 @@ class BuildContentUI extends AbstractBuildContentUI {
         contentDOM.shadowRoot.querySelector('#definition_word').innerHTML = contentDOMContentUI
         contentDOM.shadowRoot.querySelector('#relate_word').innerHTML = ""
         // add click burn horn
-        desArr && desArr.length > 0 && desArr.map((des, pos) => {
-            this.#takeSoundEvent(des, pos + 4)
-        })
+        if(desArr && desArr.length > 0){
+            desArr.unshift(originPro)
+            this.#takeSoundEvent(desArr, 0, desArr.length)
+        }
     }
 
-    #takeSoundEvent(contentFormat, to) {
+    #takeSoundEvent(contentFormats, from, to) {
         const shadow = document.querySelector('#popup-modal-transl')
         let setTime;
         const playSound = url => {
@@ -413,15 +416,16 @@ class BuildContentUI extends AbstractBuildContentUI {
         }
 
         // click buhorn span
-        let pos = 0;
         for (let ind = 0; ind < to; ind++) {
-            const listenEvent = shadow.shadowRoot.querySelector('#pro_' + ind);
-            listenEvent && listenEvent.addEventListener('click', function (e) {
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                // do somthing there
-                playSound(contentFormat.pro[(pos++)%2].url)
-            });
+            for(let pos = 0; pos < contentFormats[ind].pro.length; pos++){
+                const listenEvent = shadow.shadowRoot.querySelector('#pro_' + (from + 2 * ind + pos));
+                listenEvent && listenEvent.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    // do somthing there
+                    playSound(contentFormats[ind].pro[pos].url)
+                });
+            }
         }
     }
 }
