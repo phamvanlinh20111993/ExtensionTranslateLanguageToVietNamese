@@ -2,7 +2,8 @@ import {
     matchString,
     isValidWord,
     isValidParagraph,
-    MAX_TEXT
+    MAX_TEXT,
+    URL_TEXT
 } from '../Helpers.js';
 
 import {
@@ -37,7 +38,6 @@ class AnalysisDataUI {
     getData(){
         return this.#data;
     }
-
     /**
         * format getDataResponse() argument
         * {
@@ -47,12 +47,15 @@ class AnalysisDataUI {
             pro: [{ type: 'bre', pro: '/həˈləʊ/', url: '' },
                     { type: 'nAmE', pro: '/həˈləʊ/', url: '' }],
             trans: [{ type: 'danh từ', mean: ['cân nặng', 'con vật'] },
-                    { type: 'động từ', mean: ['chiều cao', 'cái con ấy nhé', 'con chó màu vàng']}]
+                    { type: 'động từ', mean: ['chiều cao', 'cái con ấy nhé', 'con chó màu vàng']}],
+            relateWords: ["source", "https//", "noun"],
+            nearlyWords: ["source", "https//", "noun"]
         *  }
         **/
     async getDataResponse() {
         if (this.isValidString()) {
-            let analysDataFactory = await analysisDataInstance(VIETNAMESE_TYPE, this.#data);
+            let analysDataFactory
+            analysDataFactory = await analysisDataInstance(VIETNAMESE_TYPE, this.#data);
             
             console.info('instance analysDataFactory in getDataResponse - AnalysisDataUI', analysDataFactory)
             return analysDataFactory.response ? analysDataFactory : analysDataFactory.getDataResponse();
@@ -61,6 +64,18 @@ class AnalysisDataUI {
         return this.#data;
     }
 
+    async getDataResponseByUrl() {
+        return new Promise(resolve => {
+            chrome.runtime.sendMessage({
+                signal: URL_TEXT,
+                value: this.#data,
+            }, function (res) {
+                if (res.err)
+                    resolve(null)
+                resolve(res)
+            })
+        })
+    }
 }
 
 export {

@@ -18,6 +18,10 @@ class AbstractAnalysisData {
     getResponseData(){
         throw new Error('You have to implement getResponseData() overrided method ');
     }
+
+    getResponseDataFromUrl(){
+        throw new Error('You have to implement getResponseDataFromUrl() overrided method ');
+    }
 }
 
 export{

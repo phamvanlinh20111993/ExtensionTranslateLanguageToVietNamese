@@ -34,6 +34,7 @@ class BuildPopupUI extends AbstractBuildContentUI {
 
         const speaker = index => `<span class="glyphicon glyphicon-bullhorn" id="speak-${index}"
                                   style="cursor: pointer;top: 3px;"></span>`
+
         for (const e of obj.pro) {
             content += `<p style='font-size: 16px;'>
                       &nbsp;
@@ -88,14 +89,19 @@ class BuildPopupUI extends AbstractBuildContentUI {
     // overrided method
     showContentUI = obj => {
         if (!obj.translate) {
-            return `<div style="margin-left: 5px;">
-                  <h4><b>${obj.content}</b> (<span style="font-size:14px;font-style:italic;">${obj.typeText}</span>)</h4>
-                </div>
-                <div style="padding:5px;">
-                  ${this.#pronunciationText(obj)}
-                  ${this.#descriptionText(obj)}
-                  ${this.#translateText(obj)}
-                </div>`
+            return `<div id="definition_text">
+                        <div style="margin-left: 5px;">
+                            <h4><b>${obj.content}</b> (<span style="font-size:14px;font-style:italic;">
+                            ${obj.typeText}</span>)</h4>
+                        </div>
+                        <div style="padding:5px;">
+                            ${this.#pronunciationText(obj)}
+                            ${this.#descriptionText(obj)}
+                        </div>
+                    </div>
+                    <div style="padding:5px;">
+                        ${this.#translateText(obj)}
+                    </div>`
         } else {
             return `<div style="margin-left: 5px;">
                   <h4>${obj.content}</h4>
@@ -105,6 +111,20 @@ class BuildPopupUI extends AbstractBuildContentUI {
                   ${obj.translate}
                 </div>`
         }
+    }
+
+    updateContentUI = (relateWords) => {
+        let res = ``
+        relateWords && relateWords.length > 0 && relateWords.map(relateWord => {
+            res += `<div style="margin-left: 5px;">
+                        <h4><b>${relateWord.highlightedText}</b> (<span style="font-size:14px;font-style:italic;">
+                        ${relateWord.typeText}</span>)</h4>
+                    </div>
+                    <div style="padding:5px;">
+                        ${this.#descriptionText(relateWord)}
+                    </div>`
+        })
+        return res
     }
 }
 

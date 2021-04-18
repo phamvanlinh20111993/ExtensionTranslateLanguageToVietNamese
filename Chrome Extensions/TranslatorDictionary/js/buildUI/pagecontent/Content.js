@@ -145,16 +145,25 @@
                     if (response.response.data.text.toLowerCase() !== highlightedText.toLowerCase()) {
                         buildIconTranslateUI.showIconTranslate(e, function (sign) {
                             $('#loading-icon-translate').remove();
-                            buildContentUIClass.showContentUITranslateString(e, highlightedText, data)
+                            buildContentUIClass.showContentUITranslateString(e, highlightedText, {
+                                ...data
+                            })
                         })
                     }
                 } else if (response.type == TEXT_INFORMATION) {
                     data = response.response.data;
                     data.lang = response.lang
-
                     buildIconTranslateUI.showIconTranslate(e, function (sign) {
                         $('#loading-icon-translate').remove();
-                        buildContentUIClass.showContentUITranslateWord(e, highlightedText, data)
+
+                        buildContentUIClass.showContentUITranslateWord(e, highlightedText, {
+                            ...data
+                        })
+                        const relateWords = data.relateWords;
+                        // click relate words
+                        if (relateWords && relateWords.length > 0) {
+                            clickRelateWord(data, relateWords)
+                        }
                     })
                 }
             }
@@ -173,21 +182,20 @@
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        // remove icon translate popup loading
+        $('#loading-icon-translate') &&
+            $('#loading-icon-translate').length > 0 &&
+            $('#loading-icon-translate').remove();
 
-
-         // remove icon translate popup loading
-         $('#loading-icon-translate') &&
-         $('#loading-icon-translate').length > 0 &&
-         $('#loading-icon-translate').remove();
-
-         // 
+        // 
         const $translatorPopupPage = $('#translator-popup-page');
         if ($translatorPopupPage.length > 0) {
             $translatorPopupPage.remove();
         }
 
-        if (preventClickInSideContentRange("translator-popup-page", e))
+        if (preventClickInSideContentRange("translator-popup-page", e)){
             return;
+        }
 
         !$(e.target)[0] && ['IMG', 'img'].includes($(e.target)[0].tagName) &&
             $('#loading-image-content') &&
@@ -200,11 +208,11 @@
             !$('#loading-image-content').length && buildContentUIClass.contentLoading(e, 'Analyzing photos ...');
 
             analysisImageText.getTextFromImageAPI($(e.target)[0].src, async function (data) {
-            // analysisImageText.getTextFromImageClient($(e.target)[0].src, async function (data) {
-                console.log('data', data)
+                // analysisImageText.getTextFromImageClient($(e.target)[0].src, async function (data) {
+                console.info('data', data)
                 // response is not existed or error is true then clear popup then do nothing and return
                 const responseResult = data.result;
-            //   const responseResult = data;
+                //   const responseResult = data;
                 if (data.err) {
                     $('#loading-image-content').remove();
                     buildContentUIClass.contentLoading(e, 'Image not contains any text.');
@@ -286,5 +294,34 @@
             // removeWindowSelectionText()
         }
     })
+
+    let clickRelateWord = async (originWords, relateWords) => {
+        let dataResponses = []
+        for (let pos = 0; pos < relateWords.length; pos++) {
+            analysisDataUI.setData(relateWords[pos][1]);
+            const responseData = await analysisDataUI.getDataResponseByUrl();
+            let dataResponse = {}
+            dataResponse.des = responseData.data.des
+            dataResponse.relateWords = responseData.data.relateWords
+            dataResponse.pro = responseData.data.pro
+            dataResponse.referenceLink = relateWords[pos][1]
+            dataResponse.typeText = relateWords[pos][2]
+            dataResponse.highlightedText = relateWords[pos][0].trim()
+            dataResponses.push(dataResponse)
+        }
+
+        //Add origin word pronound
+        dataResponses.push(originWords);
+        const contentDOM = document.querySelector('#popup-modal-transl');
+        for (let ind = 0; ind < relateWords.length; ind++) {
+            const listenRelateEvent = contentDOM.shadowRoot.querySelector('#relate_' + ind);
+
+            listenRelateEvent && listenRelateEvent.addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                buildContentUIClass.updateContentUI(dataResponses)
+            });
+        }
+    }
 
 })();
