@@ -1,3 +1,24 @@
+
+const WORDTYPELIST = {
+    'adjective': 'adj',
+    'noun': 'n',
+    'verb': 'v',
+    'adverb': 'adv',
+    'exclamation': 'exc',
+    'pronoun': 'pro',
+    'indefinite article': 'art',
+    'determiner': 'deter',
+    'preposition': 'pre',
+
+    'danh từ': 'n',
+    'tính từ': 'adj',
+    'trạng từ': 'adv',
+    'mạo từ': 'art',
+    'đại từ': 'pronoun',
+    'động từ': 'v',
+    'cảm thán': 'exc',
+};
+
 function standardStr(str) {
     str = decodeHtmlEntities(str || '');
     return str && str.trim().replace(/\s{2,}/g, ' ') || '';
@@ -76,5 +97,6 @@ export {
     checkVietNameseChar,
     getOnLyValueInTag,
     decodeHtmlEntities,
-    checkPluralEnglish
+    checkPluralEnglish,
+    WORDTYPELIST
 };

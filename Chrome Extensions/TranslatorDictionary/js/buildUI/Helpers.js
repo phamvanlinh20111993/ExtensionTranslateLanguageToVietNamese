@@ -11,20 +11,28 @@ const WORDTYPELIST = {
     'adverb': 'adv',
     'exclamation': 'exc',
     'pronoun': 'pro',
-    'indefinite article': 'art',
+    'indefinite article': 'ind art',
+    'article': 'art',
     'determiner': 'deter',
     'preposition': 'pre',
+    'conjunction': 'conj',
 
     'danh từ': 'n',
     'tính từ': 'adj',
     'trạng từ': 'adv',
     'mạo từ': 'art',
+    'mạo từ bất định': 'ind art',
     'đại từ': 'pronoun',
     'động từ': 'v',
     'cảm thán': 'exc',
+    'hạn định': 'deter',
+    'liên từ': 'conj',
+    'giới từ': 'pre'
 };
 
 const TEXT_INFORMATION = "TEXT_INFORMATION";
+
+const URL_TEXT = "URL_TEXT";
 
 const PARAGRAPH_INFORMATION = "PARAGRAPH_INFORMATION";
 
@@ -38,7 +46,7 @@ const GOOGLE_TRANSLATE_URL = "https://translate.google.com/";
 
 const FORM_POST_SUBMIT_FILE= 'http://localhost:5555/translator-extension/translate/image/file';
 
-const FOOTER_NAME = "© 2020 HanhNguyen - Translator Extension";
+const FOOTER_NAME = "© 2020 LinhPhamVan - Translator Extension";
 
 // const VIETNAMESE_CHARACTERS = `ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯ
 //                               ĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊ
@@ -164,8 +172,9 @@ function preventClickInSideContentRange(id, e) {
 
     if ($(`#${id}`) && $(`#${id}`).length > 0) {
         //click inside popup do nothing
+        let insidePopup = $(e.target).parents($(`#${id}`))
         if (e.target.id == id ||
-            ($(e.target).parents($(`#${id}`)) && $(e.target).parents($(`#${id}`))[0].id == id)) {
+            (insidePopup && insidePopup.length > 0 && insidePopup[0].id == id)) {
             e.preventDefault();
             e.stopImmediatePropagation();
             e.stopPropagation();
@@ -215,6 +224,7 @@ export {
     GOOGLE_TRANSLATE_URL,
     FOOTER_NAME,
     FORM_POST_SUBMIT_FILE,
+    URL_TEXT,
     isNull,
     isStringEmpty,
     isEmpty,
