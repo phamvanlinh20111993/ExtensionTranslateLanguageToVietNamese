@@ -6,6 +6,7 @@ const IGNORETAGS = ["INPUT", "TEXTAREA", "BUTTON"];
 
 const WORDTYPELIST = {
     'adjective': 'adj',
+    'abbreviation': 'abbv',
     'noun': 'n',
     'verb': 'v',
     'adverb': 'adv',
@@ -18,6 +19,7 @@ const WORDTYPELIST = {
     'conjunction': 'conj',
 
     'danh từ': 'n',
+    'viết tắt': 'abbv',
     'tính từ': 'adj',
     'trạng từ': 'adv',
     'mạo từ': 'art',
